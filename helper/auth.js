@@ -31,7 +31,6 @@ const checkSignedIn = async (req, requireAuth = false, type = false) => {
         if (!user) {
             throw new AuthenticationError("User not found.");
         }
-        console.log(user);
         req.user = user;
         return true;
     }

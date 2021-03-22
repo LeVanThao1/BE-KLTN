@@ -1,0 +1,25 @@
+query Categories{
+  categories {
+    name
+    id
+  }
+}
+
+query Category {
+  category(id: "60581f4bb9f43e3e70f2787d") {
+    name
+    id
+  }
+}
+
+mutation CreateCategory {
+  createCategory(name:"Test") {
+    message
+  }
+}
+
+mutation Update {
+  updateCategory(name:"test update", id: "6058c9756ab4ad3740deedca"){
+    message
+  }
+}

@@ -1,0 +1,29 @@
+query UniqueBooks {
+  uniqueBooks{
+    name
+    id
+  }
+}
+query UniqueBook {
+  uniqueBook(id:"60584a81803e5d64c6b05cbe"){
+    name
+    id
+  }
+}
+
+mutation CreateBook {
+  createUniqueBook(dataCreate:{
+    name:"Chính trị luận",
+    description: "“Chính trị luận” của Aristotle là cuốn khảo lược về chính trị nền tảng của nền chính trị phương Tây. Những triết gia chính trị hay các nhà nghiên cứu chính trị sau này đều dựa trên các vấn đề được đề cập trong “Chính trị luận” để lập thuyết. “Chính trị luận” đã được dịch và xuất bản ở Việt Nam, tuy nhiên bản dịch có nhiều khái niệm được sử dụng không chính xác với đặc tính của thời đại mà Aristotle viết. Mặc dù vậy, các bạn vẫn có thể đọc một bản tóm tắt “Chính trị luận” để nắm sơ lược về cuốn sách."
+  	year: "1999"
+    numberOfReprint: 1,
+    publisher: "Aristotle",
+    category: "60581f4bb9f43e3e70f2787d"
+    images: [
+      "https://bookhunterclub.com/wp-content/uploads/2016/03/4_300_Rise_Empire_Cinesite_VFX_gh__0010-1024x536.jpg"
+    ]
+  })
+  {
+    message
+  }
+}

@@ -1,0 +1,45 @@
+mutation CreatStore {
+  createStore(dataStore:{
+    name: "Than Dong Store",
+    description: "Chuyen sach truyen tranh",
+    owner: "6058cd9457025139658efffe",
+    avatar: "https://salt.tikicdn.com/media/catalog/product/t/h/th_n_ng_1.jpg"
+  }) {
+    message
+  }
+}
+mutation UpdateStore {
+  updateStore(dataStore: {
+    name: "VietNam_Store"
+  }, id:"6058a9227c317d1fcde1d01b")
+  {
+    message
+  }
+}
+query Stotes {
+  stores {
+    name
+    id
+    description
+  }
+}
+
+query Store {
+  store(id:"6058a9227c317d1fcde1d01b") {
+    name
+    id
+    description
+    books {
+      book {
+        name
+      }
+    }
+  }
+}
+
+
+mutation VerifyStore {
+  verifiedStore(id:"6058cf8057025139658effff" ){
+    message
+  }
+}

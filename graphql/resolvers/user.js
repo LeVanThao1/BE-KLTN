@@ -13,15 +13,10 @@ const {
     createToken,
     checkResetPassword,
 } = require("../../helper/auth");
-const user = require("../../models/user");
 const { ROLE } = require("../../constants");
 
 module.exports = {
     Query: {
-        hello: () => {
-            console.log("tamp");
-            return "hello world";
-        },
         profile: async (parent, args, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
@@ -95,7 +90,7 @@ module.exports = {
         login: async (parent, { phone, password }) => {
             try {
                 const userExisted = await User.findOne({
-                    phone,
+                    phone: phone,
                     verifed: true,
                 });
                 if (!userExisted) {
@@ -206,11 +201,12 @@ module.exports = {
                     ...args.newUser,
                     password: hashPassword,
                 });
-                await newUser.save();
                 await client.verify.services(serviceId).verifications.create({
                     to: "+84" + newUser.phone.slice(1),
                     channel: "sms",
                 });
+
+                await newUser.save();
                 return { message: "Success" };
             } catch (e) {
                 return new ApolloError(e.message, 500);

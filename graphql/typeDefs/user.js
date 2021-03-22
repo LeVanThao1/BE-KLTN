@@ -2,7 +2,6 @@ const { gql } = require("apollo-server-express");
 
 module.exports = gql`
     type Query {
-        hello: String
         logout: Result!
         profile: User!
         users: [User!]!
@@ -50,8 +49,8 @@ module.exports = gql`
         role: ROLE!
         OPT: String
         verifed: Boolean
-        createdAt: String
-        updatedAt: String
+        createdAt: String!
+        updatedAt: String!
         isOnline: Boolean
     }
     input OTP {

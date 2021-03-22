@@ -1,0 +1,108 @@
+
+query profile{
+  profile{
+    name
+    phone
+    role
+  }
+}
+query loginStore {
+  login (phone: "0964555151", password:"ta210402"){
+    user{
+      name
+    }
+    token
+    refreshToken
+  }
+}
+
+query loginAdmin {
+  login (phone: "0982949416", password:"ta210402"){
+    user{
+      name
+    }
+    token
+    refreshToken
+  }
+}
+query verify{
+  verify(phone: "0348120116", otp: "790004"){
+    message
+  }
+}
+query refreshToken{
+  refreshToken {
+    user {
+      name
+    }
+    token
+    refreshToken
+  }
+}
+
+query users {
+  users {
+    id
+    name
+    phone
+    email
+    role
+    verifed
+  }
+}
+
+query user{
+  user(id:"605322a298af6e8f9cde4642") {
+    name
+    phone
+    email
+  }
+}
+
+query logout {
+  logout {
+    message
+  }
+}
+
+query forgotPassword {
+  forgotPassword(phone: "0964555151") {
+    message
+  }
+}
+query checkOTPForgot {
+  checkOTPForgot(phone: "0964555151", otp: "920253")
+}
+mutation RegisterUser{
+  register(newUser:{ 
+    name:"vanthao", 
+    email:"vanthao@gmail.com", 
+    phone:"0348120116", 
+    password: "ta210402"}) 
+  {
+  	message
+  }
+}
+
+mutation resetPassword {
+  resetPassword(token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNTMyMmEyOThhZjZlOGY5Y2RlNDY0MiIsImlhdCI6MTYxNjA5MjI5MiwiZXhwIjoxNjE2MDkyNTkyfQ.fuC696yc9ZdNrW6XIXT4Yn42IfVDtznPMZ7uzm6mQnQ", password: "ta210402") {
+    message
+  }
+}
+mutation updateUserRole {
+  updateUserRole(role: STORE,id: "6058cd9457025139658efffe"){
+    message
+  }
+}
+
+mutation updateUserInfo {
+  updateUserInfo(userUpdate: { name:"thang nt", address: "32 le van duc"}){
+    message
+  }
+}
+
+mutation changePassword {
+  changePassword(oldPassword:"ta210402", newPassword:"12345678"){
+    message
+  }
+}
