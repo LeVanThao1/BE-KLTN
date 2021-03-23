@@ -1,4 +1,4 @@
-const Category = require("../../models/category");
+const { Category } = require("../../models");
 const { ApolloError, AuthenticationError } = require("apollo-server-express");
 const { ROLE } = require("../../constants");
 const { checkPermission } = require("../../helper/auth");

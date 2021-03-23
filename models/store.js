@@ -31,6 +31,9 @@ const Store = mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        deletedAt: {
+            type: Date,
+        },
         // ATM: {
         //     type: String,
         // 	required: [true, "please type owner"],

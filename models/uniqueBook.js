@@ -34,6 +34,9 @@ const UniqueBook = mongoose.Schema(
             type: String,
             required: [true, "please enter description"],
         },
+        deletedAt: {
+            type: Date,
+        },
     },
     {
         timestamps: true,

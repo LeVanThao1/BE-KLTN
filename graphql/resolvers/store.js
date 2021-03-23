@@ -1,9 +1,7 @@
-const Store = require("../../models/store");
+const { Store, User, Book } = require("../../models");
 const { ApolloError, AuthenticationError } = require("apollo-server-express");
 const { ROLE } = require("../../constants");
 const { checkPermission } = require("../../helper/auth");
-const User = require("../../models/user");
-const Book = require("../../models/book");
 module.exports = {
     Store: {
         owner: async (parent, { id }, { req }, info) => {

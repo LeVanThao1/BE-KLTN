@@ -1,6 +1,7 @@
 const { gql } = require("apollo-server-express");
 
 module.exports = gql`
+    scalar DateTime
     type Query {
         logout: Result!
         profile: User!
@@ -52,6 +53,7 @@ module.exports = gql`
         createdAt: String!
         updatedAt: String!
         isOnline: Boolean
+        deletedAt: DateTime
     }
     input OTP {
         otp: String!

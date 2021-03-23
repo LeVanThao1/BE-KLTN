@@ -1,7 +1,7 @@
 const { APP_SECRET, APP_REFRESH_SECRET, APP_OTP_SECRET } = process.env;
 const { AuthenticationError } = require("apollo-server-errors");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+const { User } = require("../models");
 const { ROLE } = require("../constants/index");
 
 const issueToken = async (id) => {

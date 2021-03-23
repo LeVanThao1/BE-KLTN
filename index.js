@@ -26,6 +26,11 @@ const server = new ApolloServer({
     typeDefs,
     resolvers,
     context: ({ req, res }) => ({ req, res }),
+    uploads: {
+        maxFileSize: 300000,
+        maxFiles: 4,
+        // maxFieldSize: 2000000,
+    },
 });
 
 app.use(cors());

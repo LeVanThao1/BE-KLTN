@@ -9,6 +9,8 @@ const User = mongoose.Schema(
         },
         avatar: {
             type: String,
+            default:
+                "https://res.cloudinary.com/thaovan/image/upload/v1606099416/Dinosuar_shop/avatar/male.jpg",
         },
         email: {
             type: String,
@@ -49,6 +51,9 @@ const User = mongoose.Schema(
         isOnline: {
             type: Boolean,
             default: false,
+        },
+        deletedAt: {
+            type: Date,
         },
     },
     {

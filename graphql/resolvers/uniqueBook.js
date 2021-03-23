@@ -1,8 +1,7 @@
-const UniqueBook = require("../../models/uniqueBook");
+const { UniqueBook, Category } = require("../../models");
 const { ApolloError, AuthenticationError } = require("apollo-server-express");
 const { ROLE } = require("../../constants");
 const { checkPermission } = require("../../helper/auth");
-const Category = require("../../models/category");
 module.exports = {
     UniqueBook: {
         category: async (parent, { id }, { req }, info) => {
@@ -16,11 +15,7 @@ module.exports = {
     Query: {
         uniqueBook: async (parent, { id }, { req }, info) => {
             try {
-                const uniqueBookExisted = await UniqueBook.findById(
-                    id
-                ).populate({
-                    path: "category",
-                });
+                const uniqueBookExisted = await UniqueBook.findById(id);
                 if (!uniqueBookExisted) {
                     return new ApolloError("Unique book not found", 404);
                 }

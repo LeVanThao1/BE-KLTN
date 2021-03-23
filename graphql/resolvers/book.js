@@ -1,9 +1,7 @@
-const UniqueBook = require("../../models/uniqueBook");
+const { UniqueBook, Store, Book } = require("../../models");
 const { ApolloError, AuthenticationError } = require("apollo-server-express");
 const { ROLE } = require("../../constants");
 const { checkPermission } = require("../../helper/auth");
-const Store = require("../../models/store");
-const Book = require("../../models/book");
 module.exports = {
     Book: {
         book: async (parent, { id }, { req }, info) => {
@@ -91,11 +89,17 @@ module.exports = {
                 if (!(await checkPermission(req, [ROLE.STORE]))) {
                     return new AuthenticationError("User have not permission");
                 }
-                const store = await Store.findOne({ owner: req.user._id });
+                const store = await Store.findOne({
+                    owner: req.user._id,
+                    deletedAt: undefined,
+                });
                 if (!store) {
                     return new ApolloError("You have not store", 400);
                 }
-                const bookExisted = await Book.findById(id);
+                const bookExisted = await Book.findOne({
+                    _id: id,
+                    deletedAt: undefined,
+                });
                 if (!bookExisted) {
                     return new AuthenticationError("Book not found", 404);
                 }
@@ -121,7 +125,10 @@ module.exports = {
                 if (!(await checkPermission(req, [ROLE.STORE]))) {
                     return new AuthenticationError("User have not permission");
                 }
-                const store = await Store.findOne({ owner: req.user._id });
+                const store = await Store.findOne({
+                    owner: req.user._id,
+                    deletedAt: undefined,
+                });
                 if (!store) {
                     return new ApolloError("You have not permission", 400);
                 }
@@ -129,7 +136,7 @@ module.exports = {
                 if (!bookExisted) {
                     return new ApolloError("Book not found", 404);
                 }
-                await Store.deleteOne({ _id: id });
+                await Book.updateOne({ _id: id }, { deletedAt: new Date() });
                 return { message: "Delete book success!" };
             } catch (e) {
                 return new ApolloError(e.message, 500);

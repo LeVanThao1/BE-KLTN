@@ -1,4 +1,4 @@
-const User = require("../../models/user");
+const { User } = require("../../models");
 const { ApolloError, AuthenticationError } = require("apollo-server-express");
 const accountSid = process.env.TWILIOID_ACCOUNT_SID;
 const authToken = process.env.TWILIOID_AUTH_TOKEN;

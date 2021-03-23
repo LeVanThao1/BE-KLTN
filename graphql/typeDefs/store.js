@@ -1,6 +1,7 @@
 const { gql } = require("apollo-server-express");
 
 module.exports = gql`
+    scalar DateTime
     type Query {
         store(id: ID!): Store!
         stores: [Store!]!
@@ -21,6 +22,7 @@ module.exports = gql`
         books: [Book!]
         createdAt: String!
         updatedAt: String!
+        deletedAt: DateTime
     }
 
     input storeCreate {
