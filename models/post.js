@@ -11,6 +11,11 @@ const Post = mongoose.Schema(
             required: [true, "please enter unique book"],
             ref: "uniqueBook",
         },
+        images: [
+            {
+                type: String,
+            },
+        ],
         description: {
             type: String,
             required: [true, "please enter description"],

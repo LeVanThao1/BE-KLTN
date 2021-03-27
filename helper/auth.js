@@ -25,9 +25,10 @@ const checkSignedIn = async (req, requireAuth = false, type = false) => {
     if (header) {
         const token = header.replace("Bearer ", "");
         const decoded = await jwt.verify(token, APP_SECRET);
-        const user = await User.findById(decoded.id).select(
-            !type ? "-password" : ""
-        );
+        const user = await User.findOne({
+            _id: decoded.id,
+            deletedAt: undefined,
+        }).select(!type ? "-password" : "");
         if (!user) {
             throw new AuthenticationError("User not found.");
         }
@@ -44,7 +45,10 @@ const refreshToken = async (req) => {
     const header = req.headers.refresh_token;
     if (header) {
         const decoded = await jwt.verify(header, APP_REFRESH_SECRET);
-        const user = await User.findById(decoded.id).select("-password");
+        const user = await User.findOne({
+            _id: decoded.id,
+            deletedAt: undefined,
+        }).select("-password");
         if (!user) {
             throw new AuthenticationError("Invalid user credentials.");
         }
@@ -62,7 +66,10 @@ const checkPermission = async (req, role = [ROLE.MEMBER]) => {
     }
     const token = header.replace("Bearer ", "");
     const decoded = await jwt.verify(token, APP_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
+    const user = await User.findOne({
+        _id: decoded.id,
+        deletedAt: undefined,
+    }).select("-password");
     if (!user) {
         throw new AuthenticationError("Invalid user credentials.");
     }
@@ -75,8 +82,10 @@ const checkPermission = async (req, role = [ROLE.MEMBER]) => {
 
 const checkResetPassword = async (req, token) => {
     const decoded = await jwt.verify(token, APP_OTP_SECRET);
-    console.log(1);
-    const user = await User.findById(decoded.id).select("-password");
+    const user = await User.findOne({
+        _id: decoded.id,
+        deletedAt: undefined,
+    }).select("-password");
     if (!user) {
         throw new AuthenticationError(
             "User password reset information is not valid."

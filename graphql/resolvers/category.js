@@ -6,7 +6,10 @@ module.exports = {
     Query: {
         category: async (parent, { id }, { req }, info) => {
             try {
-                const categoryExisted = await Category.findById(id);
+                const categoryExisted = await Category.findOne({
+                    _id: id,
+                    deletedAt: undefined,
+                });
                 if (!categoryExisted) {
                     return new ApolloError("Category not found", 404);
                 }
@@ -31,6 +34,7 @@ module.exports = {
                 }
                 const categoryExisted = await Category.findOne({
                     name,
+                    deletedAt: undefined,
                 });
                 if (categoryExisted) {
                     return new ApolloError(
@@ -53,7 +57,10 @@ module.exports = {
                 if (!(await checkPermission(req, [ROLE.ADMIN]))) {
                     return new AuthenticationError("User not authenticated");
                 }
-                const caterogyExisted = await Category.findById(id);
+                const caterogyExisted = await Category.findOne({
+                    _id: id,
+                    deletedAt: undefined,
+                });
                 if (!caterogyExisted) {
                     return new AuthenticationError("Category not found", 404);
                 }
@@ -70,7 +77,10 @@ module.exports = {
                 if (!(await checkPermission(req, [ROLE.ADMIN]))) {
                     return new AuthenticationError("User not authenticated");
                 }
-                const caterogyExisted = await Category.findById(id);
+                const caterogyExisted = await Category.findOne({
+                    _id: id,
+                    deletedAt: undefined,
+                });
                 if (!caterogyExisted) {
                     return new AuthenticationError("Category not found", 404);
                 }

@@ -25,6 +25,7 @@ module.exports = {
                 const storeExisted = await Store.findOne({
                     _id: id,
                     verified: true,
+                    deletedAt: undefined,
                 });
                 if (!storeExisted) {
                     return new ApolloError("Store not found", 404);
@@ -43,7 +44,11 @@ module.exports = {
                     _id: id,
                 };
                 if (req.user.role === ROLE.STORE) {
-                    query = { ...query, owner: req.user._id };
+                    query = {
+                        ...query,
+                        owner: req.user._id,
+                        deletedAt: undefined,
+                    };
                 }
                 const storeExisted = await Store.findOne(query);
                 if (!storeExisted) {
@@ -56,7 +61,10 @@ module.exports = {
         },
         stores: async (parent, args, { req }, info) => {
             try {
-                return await Store.find({ verified: true });
+                return await Store.find({
+                    verified: true,
+                    deletedAt: undefined,
+                });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -77,6 +85,7 @@ module.exports = {
             try {
                 const storeExisted = await Store.findOne({
                     name: dataStore.name,
+                    deletedAt: undefined,
                 });
                 if (storeExisted) {
                     return new ApolloError("Store already existed", 400);
@@ -99,6 +108,8 @@ module.exports = {
                 const storeExisted = await Store.findOne({
                     _id: id,
                     owner: req.user._id,
+                    verified: true,
+                    deletedAt: undefined,
                 });
                 if (!storeExisted) {
                     return new AuthenticationError("Store not found", 404);
@@ -129,7 +140,11 @@ module.exports = {
                     _id: id,
                 };
                 if (req.user.role === ROLE.STORE) {
-                    query = { ...query, owner: req.user._id };
+                    query = {
+                        ...query,
+                        owner: req.user._id,
+                        deletedAt: undefined,
+                    };
                 }
                 const storeExisted = await Store.findOne(query);
                 if (!storeExisted) {
@@ -146,7 +161,11 @@ module.exports = {
                 if (!(await checkPermission(req, [ROLE.ADMIN]))) {
                     return new AuthenticationError("User have not permission");
                 }
-                const storeExisted = await Store.findById(id);
+                const storeExisted = await Store.findOne({
+                    _id: id,
+                    verified: false,
+                    deletedAt: undefined,
+                });
                 if (!storeExisted) {
                     return new AuthenticationError("Store not found", 404);
                 }

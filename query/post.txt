@@ -1,0 +1,59 @@
+query post{
+  post(id:"60599ed82af6508c4f49bbb3"){
+    title
+    uniqueBook {
+      name
+      images
+      description
+    }
+    author {
+      name
+      avatar
+    }
+    description
+    images
+    
+  }
+}
+query posts{
+  posts{
+    id
+    title
+    uniqueBook {
+      name
+      images
+      description
+    }
+    author {
+      name
+      avatar
+    }
+    description
+    images
+    
+  }
+}
+
+mutation createPost {
+  createPost(dataPost: {
+    title: "Trao đổi sách Viet Nam",
+    uniqueBook: "60584a81803e5d64c6b05cbe",
+    description: "Tôi muốn trao đổi sách này với cuốn sách khác",
+  }){
+    message
+  }
+}
+
+mutation updatePost {
+  updatePost(dataPost: {
+    description: "Tôi muốn trao đổi sách Không Gia Đình với cuốn sách Có Gia Đình",
+  }, id: "60599ed82af6508c4f49bbb3"){
+    message
+  }
+}
+
+mutation deletePost {
+  deletePost(id: ""){
+    message
+  }
+}

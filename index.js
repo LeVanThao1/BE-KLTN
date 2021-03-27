@@ -1,41 +1,80 @@
 const express = require("express");
-const { ApolloServer, graphqlExpress } = require("apollo-server-express");
+const {
+    ApolloServer,
+    graphiqlExpress,
+    graphqlExpress,
+    graphqlConnect,
+} = require("apollo-server-express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const cors = require("cors");
 const app = express();
+const { execute, subscribe } = require("graphql");
 const consola = require("consola");
 const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
 const { loadFilesSync } = require("@graphql-tools/load-files");
 const path = require("path");
+const { pubsub } = require("./graphql/configs/index");
+const http = require("http");
+const { SubscriptionServer } = require("subscriptions-transport-ws");
 app.use("*", cors({ origin: "http://127.0.0.1:8081" }));
+
 // app.use("/graphql", bodyParser.json(), graphqlExpress({ schema }));
 // const {typeDefs, resolvers} = require("./graphql");
 //types query/mutation/subscription
 const typeDefs = mergeTypeDefs(
     loadFilesSync(path.join(__dirname, "./graphql/typeDefs"))
 );
-
 //resolvers
 const resolvers = mergeResolvers(
     loadFilesSync(path.join(__dirname, "./graphql/resolvers"))
 );
 
+// app.use(function (req, res, next) {
+//     console.log("Time:", Date.now());
+//     next();
+// });
+
+// app.use(
+//     "/graphql",
+//     bodyParser.json(),
+//     graphqlExpress({
+//         schema: typeDefs,
+//     })
+// );
+
+// app.use(
+//     "/graphql",
+//     graphiqlExpress({
+//         endpointURL: "/graphql",
+//         subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`,
+//     })
+// );
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req, res }) => ({ req, res }),
+    context: ({ req, res, connection }) => ({ req, res, connection }),
     uploads: {
         maxFileSize: 300000,
         maxFiles: 4,
         // maxFieldSize: 2000000,
     },
+    subscriptions: {
+        path: "/subscriptions",
+        onConnect: () => console.log("Connected to websocket"),
+        onDisconnect: () => console.log("Disconected to websocket"),
+    },
+    tracing: true,
 });
 
 app.use(cors());
 server.applyMiddleware({ app });
-const port = process.env.PORT || 3000;
+
+const httpServer = http.createServer(app);
+server.installSubscriptionHandlers(httpServer);
+
+const PORT = process.env.PORT || 3000;
 
 mongoose
     .connect(
@@ -48,10 +87,13 @@ mongoose
         }
     )
     .then(() =>
-        app.listen(port, () =>
+        httpServer.listen(PORT, () => {
             consola.success(
-                `Running a Graphql API server at http://localhost:${port}${server.graphqlPath}`
-            )
-        )
+                `Running a Graphql API server at http://localhost:${PORT}${server.graphqlPath}`
+            );
+            consola.success(
+                `Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`
+            );
+        })
     )
     .catch((err) => consola.error(err));

@@ -1,0 +1,19 @@
+mutation uploadSingleFile($file:Upload!) {
+  uploadSingleFile(file: $file){
+    id
+    url
+    name
+    asset_id
+    public_id
+  }
+}
+
+mutation uploadMultiFile($files:[Upload!]!) {
+  uploadMultiFile(files: $files){
+    id
+    url
+    name
+    asset_id
+    public_id
+  }
+}

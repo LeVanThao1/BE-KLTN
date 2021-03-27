@@ -3,10 +3,10 @@ const { gql } = require("apollo-server-express");
 module.exports = gql`
     scalar DateTime
     type Query {
-        book(id: ID!): Book!
-        books: [Book!]!
-        bookFromStore(id: ID!, store: ID!): Book!
-        booksFromStore(store: ID!): [Book!]!
+        book(id: ID!, store: ID): Book!
+        books(store: ID): [Book!]!
+        bookByAdmin(id: ID!): Book!
+        booksByAdmin: [Book!]!
     }
     type Mutation {
         createBook(dataBook: BookCreate!): Result!

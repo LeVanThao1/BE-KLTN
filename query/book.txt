@@ -1,8 +1,8 @@
 mutation createBook {
   createBook (dataBook: {
-    book: "60584a81803e5d64c6b05cbe"
-    amount: 4,
-    price: 200000
+    book: "6058ccb857025139658efffd"
+    amount: 10,
+    price: 50000
   }){
     message
   }
@@ -16,7 +16,7 @@ mutation updateBook {
   }
 }
 query Books {
-  books {
+  books(store:"6058cf8057025139658effff") {
     id
     book {
       name
@@ -31,31 +31,6 @@ query Books {
 
 query Book {
   book(id: "6058a95f06290621276b9312") {
-    book {
-      name
-    }
-    price
-    amount
-    store {
-      name
-    }
-  }
-}
-
-query BookFromStore {
-  bookFromStore(id: "6058a95f06290621276b9312", store:"6058a9227c317d1fcde1d01b") {
-    book {
-      name
-    }
-    price
-    amount
-    store {
-      name
-    }
-  }
-}
-query BooksFromStore {
-  booksFromStore(store:"6058a9227c317d1fcde1d01b") {
     book {
       name
     }

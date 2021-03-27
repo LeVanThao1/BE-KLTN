@@ -15,7 +15,10 @@ module.exports = {
     Query: {
         uniqueBook: async (parent, { id }, { req }, info) => {
             try {
-                const uniqueBookExisted = await UniqueBook.findById(id);
+                const uniqueBookExisted = await UniqueBook.findOne({
+                    _id: id,
+                    deletedAt: undefined,
+                });
                 if (!uniqueBookExisted) {
                     return new ApolloError("Unique book not found", 404);
                 }
@@ -26,7 +29,7 @@ module.exports = {
         },
         uniqueBooks: async (parent, args, { req }, info) => {
             try {
-                return await UniqueBook.find();
+                return await UniqueBook.find({ deletedAt: undefined });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

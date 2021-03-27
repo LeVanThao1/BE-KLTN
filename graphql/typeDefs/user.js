@@ -12,6 +12,7 @@ module.exports = gql`
         user(id: ID!): User!
         forgotPassword(phone: String!): Result!
         checkOTPForgot(phone: String!, otp: String): String!
+        userByAdmin(id: ID!): User!
     }
     type Mutation {
         register(newUser: UserInput!): Result!

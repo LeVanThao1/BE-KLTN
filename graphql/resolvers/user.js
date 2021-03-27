@@ -45,19 +45,31 @@ module.exports = {
                 if (!(await checkPermission(req, [ROLE.ADMIN]))) {
                     return new AuthenticationError("User not authenticated");
                 }
-                return await User.find({ verifed: true }).select("-password");
+                return await User.find().select("-password");
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        userByAdmin: async (parent, { id }, { req }, info) => {
+            try {
+                if (!(await checkPermission(req, [ROLE.ADMIN]))) {
+                    return new AuthenticationError("User not found");
+                }
+                return await User.findOne({ _id: id }).select("-password");
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
         },
         user: async (parent, { id }, { req }, info) => {
             try {
-                if (!(await checkPermission(req, [ROLE.ADMIN, ROLE.STORE]))) {
-                    return new AuthenticationError("User not found");
+                const userExisted = await User.findOne({
+                    _id: id,
+                    verifed: true,
+                }).select("-password");
+                if (!userExisted) {
+                    return new ApolloError("User not found", 400);
                 }
-                return await User.findOne({ _id: id, verifed: true }).select(
-                    "-password"
-                );
+                return userExisted;
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

@@ -20,9 +20,16 @@ module.exports = {
         },
     },
     Query: {
-        book: async (parent, { id }, { req }, info) => {
+        book: async (parent, { id, store }, { req }, info) => {
             try {
-                const bookExisted = await Book.findById(id);
+                let query = {
+                    _id: id,
+                    deletedAt: undefined,
+                };
+                if (store) {
+                    query.store = store;
+                }
+                const bookExisted = await Book.findOne(query);
                 if (!bookExisted) {
                     return new ApolloError("Book not found", 404);
                 }
@@ -31,9 +38,25 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        bookFromStore: async (parent, { id, store }, { req }, info) => {
+        books: async (parent, { store }, { req }, info) => {
             try {
-                const bookExisted = await Book.findOne({ _id: id, store });
+                let query = {
+                    deletedAt: undefined,
+                };
+                if (store) {
+                    query.store = store;
+                }
+                return await Book.find(query);
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        bookByAdmin: async (parent, { id }, { req }, info) => {
+            try {
+                if (!(await checkPermission(req, [ROLE.ADMIN]))) {
+                    return new AuthenticationError("User have not permission");
+                }
+                const bookExisted = await Book.findOne({ _id: id });
                 if (!bookExisted) {
                     return new ApolloError("Book not found", 404);
                 }
@@ -42,16 +65,12 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        books: async (parent, args, { req }, info) => {
+        booksByAdmin: async (parent, args, { req }, info) => {
             try {
+                if (!(await checkPermission(req, [ROLE.ADMIN]))) {
+                    return new AuthenticationError("User have not permission");
+                }
                 return await Book.find();
-            } catch (e) {
-                return new ApolloError(e.message, 500);
-            }
-        },
-        booksFromStore: async (parent, { store }, { req }, info) => {
-            try {
-                return await Book.find({ store });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -69,6 +88,7 @@ module.exports = {
                 }
                 const bookExisted = await Book.findOne({
                     $and: [{ book: dataBook.book }, { store: store._id }],
+                    deletedAt: undefined,
                 });
                 if (bookExisted) {
                     return new ApolloError("Book already existed in shop", 400);
@@ -136,7 +156,10 @@ module.exports = {
                 if (!bookExisted) {
                     return new ApolloError("Book not found", 404);
                 }
-                await Book.updateOne({ _id: id }, { deletedAt: new Date() });
+                await Book.updateOne(
+                    { _id: id, deletedAt: undefined },
+                    { deletedAt: new Date() }
+                );
                 return { message: "Delete book success!" };
             } catch (e) {
                 return new ApolloError(e.message, 500);

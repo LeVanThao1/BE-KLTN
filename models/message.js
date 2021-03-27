@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Message = mongoose.Schema(
     {
         content: {
-            type: String | Object,
+            type: String,
             required: [true, "please enter title"],
         },
         images: [
@@ -24,6 +24,9 @@ const Message = mongoose.Schema(
             type: mongoose.Types.ObjectId,
             required: [true, "please author"],
             ref: "user",
+        },
+        seen: {
+            type: Date,
         },
         deletedAt: {
             type: Date,

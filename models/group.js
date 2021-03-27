@@ -9,11 +9,12 @@ const Group = mongoose.Schema(
                 ref: "user",
             },
         ],
-        // messages: [{
-        // 	type: mongoose.Types.ObjectId,
-        // 	required: [true, "please enter message"],
-        // 	ref: "message"
-        // }],
+        messages: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref: "message",
+            },
+        ],
         lastMassage: {
             type: mongoose.Types.ObjectId,
             // required: [true, "please enter message"],
@@ -22,6 +23,12 @@ const Group = mongoose.Schema(
         deletedAt: {
             type: Date,
         },
+        userDeleted: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref: "user",
+            },
+        ],
     },
     {
         timestamps: true,
