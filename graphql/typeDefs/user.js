@@ -60,10 +60,10 @@ module.exports = gql`
     }
     type User {
         id: ID!
-        email: String!
+        email: String
         name: String!
         avatar: String
-        phone: String!
+        phone: String
         password: String
         address: String
         role: ROLE

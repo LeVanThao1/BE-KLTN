@@ -75,6 +75,15 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
+        booksByCategory: async (parent, { id }, { req }, info) => {
+            try {
+                const uniqueBook = await UniqueBook.find({ category: id });
+                const idUnique = uniqueBook.map((dt) => dt._id);
+                return await Book.find({ book: { $in: idUnique } });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
     },
     Mutation: {
         createBookOther: async (

@@ -37,7 +37,7 @@ module.exports = {
     User: {
         store: async (parent, args, { req }, info) => {
             try {
-                return await Store.findOne({ owner: parent._id });
+                return await Store.findOne({ owner: parent.id });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -53,15 +53,14 @@ module.exports = {
             try {
                 console.log(req.user);
                 const a = {
-                    order: await NotificationOrder.find({ to: req.user._id }),
+                    order: await NotificationOrder.find({ to: parent.id }),
                     book: await NotificationBook.find({
-                        to: req.user._id,
+                        to: parent.id,
                     }),
                     post: await NotificationPost.find({
-                        to: req.user._id,
+                        to: parent.id,
                     }),
                 };
-                console.log(a);
                 return a;
             } catch (e) {
                 return new ApolloError(e.message, 500);
@@ -151,10 +150,11 @@ module.exports = {
                 //     .catch((e) => {
                 //         throw new ApolloError("OTP incorrect", 400);
                 //     });
-                await User.updateOne(
-                    { phone: phone },
-                    { verifed: true, expired: null, otp: null }
-                );
+                await User.updateOne(query, {
+                    verifed: true,
+                    expired: null,
+                    otp: null,
+                });
                 return { message: "Verify success" };
             } catch (e) {
                 return new ApolloError(e.message, 500);
@@ -303,6 +303,8 @@ module.exports = {
                     password: hashPassword,
                     otp,
                     expired: new Date(moment().add(5, "minutes")),
+                    email: args.type ? "" : args.newUser.email,
+                    phone: args.type ? args.newUser.phone : "",
                 });
                 if (args.type) {
                     await client.messages

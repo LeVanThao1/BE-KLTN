@@ -7,6 +7,7 @@ module.exports = gql`
         books(store: ID): [Book!]!
         bookByAdmin(id: ID!): Book!
         booksByAdmin: [Book!]!
+        booksByCategory(id: ID!): [Book!]!
     }
     type Mutation {
         createBook(dataBook: BookCreate!): Result!
