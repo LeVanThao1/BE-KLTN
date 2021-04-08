@@ -13,17 +13,7 @@ module.exports = gql`
         updatePost(dataPost: dataUpdatePost!, id: ID!): Result!
         deletePost(id: ID!): Result!
     }
-    type Post {
-        id: ID!
-        title: String!
-        uniqueBook: UniqueBook!
-        description: String!
-        images: [String!]
-        author: User!
-        createdAt: String!
-        updatedAt: String!
-        deletedAt: DateTime
-    }
+
     input dataCreatePost {
         title: String!
         uniqueBook: ID!

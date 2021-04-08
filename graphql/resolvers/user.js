@@ -1,4 +1,12 @@
-const { User } = require("../../models");
+const {
+    User,
+    Book,
+    Store,
+    Category,
+    NotificationOrder,
+    NotificationBook,
+    NotificationPost,
+} = require("../../models");
 const { ApolloError, AuthenticationError } = require("apollo-server-express");
 const accountSid = process.env.TWILIOID_ACCOUNT_SID;
 const authToken = process.env.TWILIOID_AUTH_TOKEN;
@@ -14,8 +22,52 @@ const {
     checkResetPassword,
 } = require("../../helper/auth");
 const { ROLE } = require("../../constants");
-
+const sendEmail = require("../../helper/mailer");
+const moment = require("moment");
 module.exports = {
+    Detail: {
+        book: async (parent, args, { req }, info) => {
+            try {
+                return await Book.findOne({ _id: parent.book });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+    },
+    User: {
+        store: async (parent, args, { req }, info) => {
+            try {
+                return await Store.findOne({ owner: parent._id });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        interests: async (parent, args, { req }, info) => {
+            try {
+                return await Category.findOne({ _id: parent.interests });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        notifications: async (parent, args, { req }, info) => {
+            try {
+                console.log(req.user);
+                const a = {
+                    order: await NotificationOrder.find({ to: req.user._id }),
+                    book: await NotificationBook.find({
+                        to: req.user._id,
+                    }),
+                    post: await NotificationPost.find({
+                        to: req.user._id,
+                    }),
+                };
+                console.log(a);
+                return a;
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+    },
     Query: {
         profile: async (parent, args, { req }, info) => {
             try {
@@ -74,37 +126,46 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        verify: async (parent, { phone, otp }) => {
+        verify: async (parent, { phone, otp, email, type }) => {
             try {
-                const user = await User.findOne({
-                    phone: phone,
-                    verifed: false,
-                });
+                let query = { verifed: false };
+                if (type) query.phone = phone;
+                else query.email = email;
+                const user = await User.findOne(query);
                 if (!user) {
                     return new ApolloError("User not found", "404");
                 }
-                await client.verify
-                    .services(serviceId)
-                    .verificationChecks.create({
-                        to: "+84" + user.phone.slice(1),
-                        code: otp,
-                    })
-                    .then((verified) => console.log(verified))
-                    .catch((e) => {
-                        throw new ApolloError("OTP incorrect", 400);
-                    });
-                await User.updateOne({ phone: phone }, { verifed: true });
+                if (otp !== user.otp) {
+                    return new ApolloError("OTP is invalid", "400");
+                }
+                if (moment(user.expired) < new Date()) {
+                    return new ApolloError("OTP is expired", "400");
+                }
+                // await client.verify
+                //     .services(serviceId)
+                //     .verificationChecks.create({
+                //         to: "+84" + user.phone.slice(1),
+                //         code: otp,
+                //     })
+                //     .then((verified) => console.log(verified))
+                //     .catch((e) => {
+                //         throw new ApolloError("OTP incorrect", 400);
+                //     });
+                await User.updateOne(
+                    { phone: phone },
+                    { verifed: true, expired: null, otp: null }
+                );
                 return { message: "Verify success" };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
         },
-        login: async (parent, { phone, password }) => {
+        login: async (parent, { phone, password, email, type }) => {
             try {
-                const userExisted = await User.findOne({
-                    phone: phone,
-                    verifed: true,
-                });
+                let query = { verifed: true };
+                if (type) query.phone = phone;
+                else query.email = email;
+                const userExisted = await User.findOne({ ...query });
                 if (!userExisted) {
                     return new AuthenticationError("User not found", 404);
                 }
@@ -112,6 +173,7 @@ module.exports = {
                     password,
                     userExisted.password
                 );
+
                 if (!isMatch) {
                     return new AuthenticationError(
                         "Password is incorrect.",
@@ -140,50 +202,75 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        forgotPassword: async (parent, { phone }) => {
+        forgotPassword: async (parent, { phone, email, type }) => {
             try {
-                const user = await User.findOne({
-                    phone: phone,
-                    verifed: true,
-                });
+                let query = { verifed: true };
+                if (type) query.phone = phone;
+                else query.email = email;
+                const user = await User.findOne(query);
                 if (!user) {
                     return new ApolloError("User not found", "404");
                 }
-                await client.verify.services(serviceId).verifications.create({
-                    to: "+84" + phone.slice(1),
-                    channel: "sms",
-                });
+                // await client.verify.services(serviceId).verifications.create({
+                //     to: "+84" + phone.slice(1),
+                //     channel: "sms",
+                // });
+                const otp = (Date.now() + "").slice(7);
+                if (type) {
+                    await client.messages
+                        .create({
+                            body: `Please verify with OTP : ${otp}`,
+                            from: "+16614909715",
+                            to: "+84" + phone.slice(1),
+                        })
+                        .then((message) => console.log(message.sid))
+                        .catch((err) => {
+                            console.log(err);
+                            throw new Error(
+                                "Service is busy, please again",
+                                500
+                            );
+                        });
+                } else {
+                    sendEmail(email, otp);
+                }
                 return { message: "Send otp to phone number" };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
         },
-        checkOTPForgot: async (parent, { phone, otp }) => {
+        checkOTPForgot: async (parent, { phone, otp, email, type }) => {
             try {
-                const user = await User.findOne({
-                    phone: phone,
-                    verifed: true,
-                });
+                let query = { verifed: true };
+                if (type) query.phone = phone;
+                else query.email = email;
+                const user = await User.findOne(query);
                 if (!user) {
                     return new ApolloError("User not found", "404");
                 }
-                await client.verify
-                    .services(serviceId)
-                    .verificationChecks.create({
-                        to: "+84" + user.phone.slice(1),
-                        code: otp,
-                    })
-                    .then((verified) => {
-                        console.log(verified);
-                        if (verified.status === "pending") {
-                            throw new ApolloError("OTP incorrect", 400);
-                        }
-                    })
-                    .catch((e) => {
-                        console.log(e);
-                        throw new ApolloError("OTP expired", 400);
-                    });
-                // console.log(isVerified);
+                if (otp !== user.otp) {
+                    return new ApolloError("OTP is invalid", "400");
+                }
+                if (moment(user.expired) < new Date()) {
+                    return new ApolloError("OTP is expired", "400");
+                }
+                // await client.verify
+                //     .services(serviceId)
+                //     .verificationChecks.create({
+                //         to: "+84" + user.phone.slice(1),
+                //         code: otp,
+                //     })
+                //     .then((verified) => {
+                //         console.log(verified);
+                //         if (verified.status === "pending") {
+                //             throw new ApolloError("OTP incorrect", 400);
+                //         }
+                //     })
+                //     .catch((e) => {
+                //         console.log(e);
+                //         throw new ApolloError("OTP expired", 400);
+                //     });
+
                 return await createToken(user._id, "5m");
             } catch (e) {
                 return new ApolloError(e.message, 500);
@@ -193,12 +280,13 @@ module.exports = {
     Mutation: {
         register: async (parent, args, { req }) => {
             try {
-                const userExisted = await User.findOne({
-                    $or: [
-                        { phone: args.newUser.phone },
-                        { email: args.newUser.email },
-                    ],
-                });
+                let query = {};
+                if (args.type) {
+                    query.phone = args.newUser.phone;
+                } else {
+                    query.email = args.newUser.email;
+                }
+                const userExisted = await User.findOne(query);
                 if (userExisted) {
                     return new ApolloError(
                         "Phone or email is already registered",
@@ -209,14 +297,35 @@ module.exports = {
                     args.newUser.password,
                     12
                 );
+                const otp = (Date.now() + "").slice(7);
                 const newUser = new User({
                     ...args.newUser,
                     password: hashPassword,
+                    otp,
+                    expired: new Date(moment().add(5, "minutes")),
                 });
-                await client.verify.services(serviceId).verifications.create({
-                    to: "+84" + newUser.phone.slice(1),
-                    channel: "sms",
-                });
+                if (args.type) {
+                    await client.messages
+                        .create({
+                            body: `Please verify with OTP : ${otp}`,
+                            from: "+16614909715",
+                            to: "+84" + newUser.phone.slice(1),
+                        })
+                        .then((message) => console.log(message.sid))
+                        .catch((err) => {
+                            console.log(err);
+                            throw new Error(
+                                "Service is busy, please again",
+                                500
+                            );
+                        });
+                } else {
+                    sendEmail(args.newUser.email, otp);
+                }
+                // await client.verify.services(serviceId).verifications.create({
+                //     to: "+84" + newUser.phone.slice(1),
+                //     channel: "sms",
+                // });
 
                 await newUser.save();
                 return { message: "Success" };
@@ -293,6 +402,17 @@ module.exports = {
                     { _id: req.user._id },
                     { password: hashPassword }
                 );
+                return { message: "Change password success" };
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        updateCart: async (parent, { dataCart }, { req }) => {
+            try {
+                if (!(await checkSignedIn(req, true, true))) {
+                    return new AuthenticationError("User not authenticated");
+                }
+                await User.updateOne({ _id: req.user._id }, { cart: dataCart });
                 return { message: "Change password success" };
             } catch (e) {
                 return new ApolloError(e.message, 500);

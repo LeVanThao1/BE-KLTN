@@ -7,6 +7,15 @@ const Photo = require("./photo");
 const Store = require("./store");
 const UniqueBook = require("./uniqueBook");
 const Message = require("./message");
+const Order = require("./order");
+const SubOrder = require("./subOrder");
+const NotificationOrder = require("./notificationOrder");
+const NotificationPost = require("./notificationPost");
+const NotificationGeneral = require("./notificationGeneral");
+const NotificationBook = require("./notificationBook");
+const CommentBook = require("./commentBook");
+const CommentPost = require("./commentPost");
+const Evalute = require("./evalute");
 module.exports = {
     User,
     Book,
@@ -17,4 +26,12 @@ module.exports = {
     Post,
     Group,
     Message,
+    Order,
+    SubOrder,
+    NotificationOrder,
+    NotificationPost,
+    NotificationGeneral,
+    NotificationBook,
+    CommentBook,
+    CommentPost,
 };

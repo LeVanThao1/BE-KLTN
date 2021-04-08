@@ -1,0 +1,36 @@
+const { gql } = require("apollo-server-express");
+
+module.exports = gql`
+    scalar DateTime
+    type Query {
+        orderOfUser(id: ID!): Order
+    }
+    type Mutation {
+        createOrder(dataOrder: OrderCreate): Result!
+    }
+    type Subscription {
+        receiveNotificationOrder(userId: ID!): NotificationOrder!
+    }
+    type NotificationOrder {
+        title: String!
+        description: String!
+        to: User!
+        order: SubOrder!
+    }
+    type Order {
+        id: ID!
+        user: User!
+        subOrder: [SubOrder!]!
+        address: String!
+        total: Float!
+        phone: String!
+        createdAt: DateTime!
+        updatedAt: DateTime!
+        deletedAt: DateTime
+    }
+    input OrderCreate {
+        address: String!
+        phone: String!
+        subOrder: [DetailUpdate!]!
+    }
+`;

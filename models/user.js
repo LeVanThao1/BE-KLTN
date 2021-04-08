@@ -15,13 +15,13 @@ const User = mongoose.Schema(
         email: {
             type: String,
             trim: true,
-            required: [true, "please enter email"],
+            // required: [true, "please enter email"],
             unique: true,
         },
         phone: {
             type: String,
             length: 10,
-            required: [true, "please enter phone"],
+            // required: [true, "please enter phone"],
             unique: true,
         },
         password: {
@@ -40,7 +40,7 @@ const User = mongoose.Schema(
             enum: ["ADMIN", "MEMBER", "STORE"],
             default: "MEMBER",
         },
-        OTP: {
+        otp: {
             type: String,
             length: 6,
         },
@@ -52,6 +52,32 @@ const User = mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        expired: {
+            type: Date,
+        },
+        cart: [
+            {
+                book: {
+                    type: mongoose.Types.ObjectId,
+                    required: [true, "please enter book"],
+                    ref: "book",
+                },
+                amount: {
+                    type: Number,
+                    required: [true, "please enter amount"],
+                },
+                price: {
+                    type: Number,
+                    required: [true, "please enter price"],
+                },
+            },
+        ],
+        interests: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref: "category",
+            },
+        ],
         deletedAt: {
             type: Date,
         },

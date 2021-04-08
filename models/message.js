@@ -27,6 +27,13 @@ const Message = mongoose.Schema(
         },
         seen: {
             type: Date,
+            default: false,
+        },
+        type: {
+            type: String,
+            enum: ["TEXT", "VIDEO", "IMAGE"],
+            default: "TEXT",
+            required: [true, "please type"],
         },
         deletedAt: {
             type: Date,

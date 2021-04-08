@@ -20,8 +20,8 @@ module.exports = gql`
         publisher: String!
         category: Category!
         description: String!
-        createdAt: String!
-        updatedAt: String!
+        createdAt: DateTime!
+        updatedAt: DateTime!
         deletedAt: DateTime
     }
     input UniqueBookCreate {

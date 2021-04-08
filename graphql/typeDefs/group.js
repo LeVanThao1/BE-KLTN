@@ -16,8 +16,8 @@ module.exports = gql`
         lastMassage: Message
         messages: [Message!]
         userDeleted: [User!]
-        createdAt: String!
-        updatedAt: String!
+        createdAt: DateTime!
+        updatedAt: DateTime!
         deletedAt: DateTime
     }
 `;

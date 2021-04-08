@@ -1,31 +1,31 @@
 const mongoose = require("mongoose");
 
-const Store = mongoose.Schema(
+const NotificationPost = mongoose.Schema(
     {
-        name: {
+        title: {
             type: String,
             required: [true, "please enter title"],
-            unique: true,
-        },
-        avatar: {
-            type: String,
-            required: [true, "please enter avatar"],
-        },
-        background: {
-            type: String,
         },
         description: {
             type: String,
             required: [true, "please enter description"],
         },
-        owner: {
+        to: {
             type: mongoose.Types.ObjectId,
-            required: [true, "please type owner"],
+            required: [true, "please author"],
             ref: "user",
         },
-        verified: {
+        commentPost: {
+            type: mongoose.Types.ObjectId,
+            required: [true, "please post"],
+            ref: "commentPost",
+        },
+        seen: {
             type: Boolean,
             default: false,
+        },
+        image: {
+            type: String,
         },
         deletedAt: {
             type: Date,
@@ -36,4 +36,4 @@ const Store = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("store", Store);
+module.exports = mongoose.model("notificationPost", NotificationPost);

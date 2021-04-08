@@ -12,6 +12,11 @@ module.exports = gql`
         createBook(dataBook: BookCreate!): Result!
         updateBook(dataBook: BookUpdate!, id: ID!): Result!
         deleteBook(id: ID!): Result!
+        createBookOther(
+            dataUniqueBook: UniqueBookCreate
+            amount: Float!
+            price: Float!
+        ): Result!
     }
     type Book {
         id: ID!
@@ -19,8 +24,9 @@ module.exports = gql`
         store: Store!
         amount: Float!
         price: Float!
-        createdAt: String!
-        updatedAt: String!
+        sold: Float!
+        createdAt: DateTime!
+        updatedAt: DateTime!
         deletedAt: DateTime
     }
     input BookCreate {

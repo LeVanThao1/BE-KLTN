@@ -19,21 +19,26 @@ module.exports = gql`
         name: String!
         description: String!
         owner: User!
+        background: String!
+        avatar: String!
         books: [Book!]
-        createdAt: String!
-        updatedAt: String!
+        createdAt: DateTime!
+        updatedAt: DateTime!
         deletedAt: DateTime
     }
 
     input storeCreate {
         name: String!
         description: String!
+        background: String
         owner: ID!
-        avatar: String!
+        avatar: String
     }
 
     input storeUpdate {
         name: String
         description: String
+        background: String
+        avatar: String
     }
 `;

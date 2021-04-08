@@ -77,6 +77,38 @@ module.exports = {
         },
     },
     Mutation: {
+        createBookOther: async (
+            parent,
+            { dataUniqueBook, amount, price },
+            { req }
+        ) => {
+            try {
+                // if (!(await checkPermission(req, [ROLE.STORE]))) {
+                //     return new AuthenticationError("User have not permission");
+                // }
+                // const store = await Store.findOne({ owner: req.user._id });
+                // if (!store) {
+                //     return new ApolloError("You have not store", 400);
+                // }
+                // const bookExisted = await Book.findOne({
+                //     $and: [{ book: dataBook.book }, { store: store._id }],
+                //     deletedAt: undefined,
+                // });
+
+                // if (bookExisted) {
+                //     return new ApolloError("Book already existed in shop", 400);
+                // }
+
+                // const newBook = new Book({
+                //     ...dataBook,
+                //     store: store._id,
+                // });
+                // await newBook.save();
+                return { message: "Create book success" };
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
         createBook: async (parent, { dataBook }, { req }) => {
             try {
                 if (!(await checkPermission(req, [ROLE.STORE]))) {

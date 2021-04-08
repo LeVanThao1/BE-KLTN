@@ -12,11 +12,24 @@ const NotificationGeneral = mongoose.Schema(
         },
         to: [
             {
-                type: mongoose.Types.ObjectId,
-                required: [true, "please author"],
-                ref: "user",
+                user: {
+                    type: mongoose.Types.ObjectId,
+                    required: [true, "please author"],
+                    ref: "user",
+                },
+                seen: {
+                    type: Boolean,
+                    default: false,
+                },
             },
         ],
+        seen: {
+            type: Boolean,
+            default: false,
+        },
+        image: {
+            type: String,
+        },
         deletedAt: {
             type: Date,
         },

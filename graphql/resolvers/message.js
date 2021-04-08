@@ -69,10 +69,9 @@ module.exports = {
                 if (!(await checkSignedIn(req, true))) {
                     return new AuthenticationError("User have not permission");
                 }
-                const groupExisted = await Group.findOne(
-                    { _id: dataMessage.to }
-                    // { members: { $in: [req.user._id] } }
-                );
+                const groupExisted = await Group.findOne({
+                    _id: dataMessage.to,
+                });
                 if (!groupExisted) {
                     return new ApolloError("Have error", 400);
                 }
@@ -82,7 +81,6 @@ module.exports = {
                     from: req.user._id,
                     datetime: new Date(),
                 });
-                console.log(newMessage._id);
                 await Group.updateOne(
                     { _id: dataMessage.to },
                     { lastMassage: newMessage._id }

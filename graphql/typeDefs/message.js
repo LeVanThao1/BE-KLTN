@@ -21,8 +21,9 @@ module.exports = gql`
         to: Group!
         from: User!
         type: TYPE!
-        createdAt: String!
-        updatedAt: String!
+        seen: Boolean!
+        createdAt: DateTime!
+        updatedAt: DateTime!
         deletedAt: DateTime
     }
     input dataCreateMessage {

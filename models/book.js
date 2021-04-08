@@ -22,6 +22,11 @@ const Book = mongoose.Schema(
             min: 0,
             required: [true, "please enter price"],
         },
+        sold: {
+            type: Number,
+            min: 0,
+            default: 0,
+        },
         deletedAt: {
             type: Date,
         },

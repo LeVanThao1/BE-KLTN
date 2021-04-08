@@ -88,7 +88,7 @@ module.exports = {
                     deletedAt: undefined,
                 });
                 if (storeExisted) {
-                    return new ApolloError("Store already existed", 400);
+                    return new ApolloError("Name store already existed", 400);
                 }
 
                 const newStore = new Store({

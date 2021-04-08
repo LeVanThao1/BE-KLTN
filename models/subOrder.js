@@ -7,23 +7,21 @@ const SubOrder = mongoose.Schema(
             required: [true, "please enter user"],
             ref: "user",
         },
-        detail: [
-            {
-                book: {
-                    type: mongoose.Types.ObjectId,
-                    required: [true, "please enter book"],
-                    ref: "book",
-                },
-                amount: {
-                    type: Number,
-                    required: [true, "please enter amount"],
-                },
-                price: {
-                    type: Number,
-                    required: [true, "please enter price"],
-                },
+        detail: {
+            book: {
+                type: mongoose.Types.ObjectId,
+                required: [true, "please enter book"],
+                ref: "book",
             },
-        ],
+            amount: {
+                type: Number,
+                required: [true, "please enter amount"],
+            },
+            price: {
+                type: Number,
+                required: [true, "please enter price"],
+            },
+        },
         address: {
             type: String,
             min: 10,
@@ -37,7 +35,7 @@ const SubOrder = mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["WAITING", "CONFIRMED", "PROCESSING", "DONE"],
+            enum: ["CANCLE", "WAITING", "CONFIRMED", "PROCESSING", "DONE"],
             default: "WAITING",
         },
         receivedDate: {
