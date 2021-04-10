@@ -1,12 +1,19 @@
-const { UniqueBook, Store, Book } = require("../../models");
+const {
+    UniqueBook,
+    Store,
+    Book,
+    NotificationBookAdmin,
+    Category,
+} = require("../../models");
 const { ApolloError, AuthenticationError } = require("apollo-server-express");
 const { ROLE } = require("../../constants");
 const { checkPermission } = require("../../helper/auth");
+const { pubsub, TypeSub } = require("../configs");
 module.exports = {
     Book: {
         book: async (parent, { id }, { req }, info) => {
             try {
-                return await UniqueBook.findById(parent.book);
+                return parent.book && (await UniqueBook.findById(parent.book));
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -14,6 +21,16 @@ module.exports = {
         store: async (parent, { id }, { req }, info) => {
             try {
                 return await Store.findById(parent.store);
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        category: async (parent, { id }, { req }, info) => {
+            try {
+                return (
+                    parent.category &&
+                    (await Category.findById(parent.category))
+                );
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -79,7 +96,12 @@ module.exports = {
             try {
                 const uniqueBook = await UniqueBook.find({ category: id });
                 const idUnique = uniqueBook.map((dt) => dt._id);
-                return await Book.find({ book: { $in: idUnique } });
+                return await Book.find({
+                    $or: [
+                        { book: { $in: idUnique } },
+                        { category: { $in: idUnique } },
+                    ],
+                });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -128,18 +150,62 @@ module.exports = {
                     return new ApolloError("You have not store", 400);
                 }
                 const bookExisted = await Book.findOne({
-                    $and: [{ book: dataBook.book }, { store: store._id }],
+                    $or: [{ book: dataBook.book }, { name: dataBook.name }],
+                    store: store._id,
                     deletedAt: undefined,
                 });
                 if (bookExisted) {
                     return new ApolloError("Book already existed in shop", 400);
                 }
-
+                let dataNewBook = {};
+                if (dataBook.book) dataNewBook.book = dataBook.book;
+                else {
+                    dataNewBook.name = dataBook.name;
+                    dataNewBook.images = dataBook.images;
+                    dataNewBook.year = dataBook.year;
+                    dataNewBook.numberOfReprint = dataBook.numberOfReprint;
+                    dataNewBook.publisher = dataBook.publisher;
+                    dataNewBook.category = dataBook.category;
+                    dataNewBook.description = dataBook.description;
+                }
                 const newBook = new Book({
-                    ...dataBook,
+                    ...dataNewBook,
                     store: store._id,
+                    amount: dataBook.amount,
+                    price: dataBook.price,
                 });
                 await newBook.save();
+
+                if (!dataBook.book) {
+                    let dataNotify = {
+                        data: dataNewBook,
+                        seen: false,
+                    };
+                    const uniqueBook = await UniqueBook.findOne({
+                        name: dataNewBook.name,
+                    }).populate({
+                        path: "category",
+                    });
+                    if (!uniqueBook) {
+                        dataNotify.title = "New book";
+                        dataNotify.status = "ADD";
+                        dataNotify.description =
+                            "Currently this book is not available in the database. do you want to add a new one";
+                    } else {
+                        dataNotify.title = "New book";
+                        dataNotify.status = "UPDATE";
+                        dataNotify.description =
+                            "Currently this book is available in the database. do you want to update it";
+                        dataNotify.uniqueBook = uniqueBook._id;
+                    }
+                    const newNotificationAdmin = new NotificationBookAdmin(
+                        dataNotify
+                    );
+                    await newNotificationAdmin.save();
+                    pubsub.publish(TypeSub.CREATEBOOK, {
+                        content: newNotificationAdmin,
+                    });
+                }
                 return { message: "Create book success" };
             } catch (e) {
                 return new ApolloError(e.message, 500);

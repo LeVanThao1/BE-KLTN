@@ -5,6 +5,7 @@ const TypeSub = {
     NOTIFICATION: "NOTIFICATION",
     COMMENT_BOOK: "COMMENT_BOOK",
     COMMENT_POST: "COMMENT_POST",
+    CREATEBOOK: "CREATEBOOK",
 };
 
 const TypeNotification = {

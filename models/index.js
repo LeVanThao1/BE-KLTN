@@ -13,6 +13,7 @@ const NotificationOrder = require("./notificationOrder");
 const NotificationPost = require("./notificationPost");
 const NotificationGeneral = require("./notificationGeneral");
 const NotificationBook = require("./notificationBook");
+const NotificationBookAdmin = require("./notificationBookAdmin");
 const CommentBook = require("./commentBook");
 const CommentPost = require("./commentPost");
 const Evalute = require("./evalute");
@@ -34,4 +35,5 @@ module.exports = {
     NotificationBook,
     CommentBook,
     CommentPost,
+    NotificationBookAdmin,
 };

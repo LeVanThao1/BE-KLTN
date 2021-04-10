@@ -2,6 +2,11 @@ const { UniqueBook, Category } = require("../../models");
 const { ApolloError, AuthenticationError } = require("apollo-server-express");
 const { ROLE } = require("../../constants");
 const { checkPermission } = require("../../helper/auth");
+const {
+    compare,
+    stringToObjectSequence,
+    changeAlias,
+} = require("../../helper/compareString");
 module.exports = {
     UniqueBook: {
         category: async (parent, { id }, { req }, info) => {
@@ -13,6 +18,67 @@ module.exports = {
         },
     },
     Query: {
+        getRecomment: async (parent, { dataUniqueBook }, { req }, info) => {
+            try {
+                const {
+                    name,
+                    description,
+                    year,
+                    numberOfReprint,
+                    publisher,
+                    category,
+                } = dataUniqueBook;
+                const strA =
+                    name +
+                    "," +
+                    description +
+                    "," +
+                    year +
+                    "," +
+                    numberOfReprint +
+                    "," +
+                    publisher +
+                    "," +
+                    category;
+                const uniqueBook = await UniqueBook.find({
+                    deletedAt: undefined,
+                });
+                const result = uniqueBook.filter((dt) => {
+                    const {
+                        name,
+                        description,
+                        year,
+                        numberOfReprint,
+                        publisher,
+                        category,
+                    } = dt;
+                    const strB =
+                        name +
+                        "," +
+                        description +
+                        "," +
+                        year +
+                        "," +
+                        numberOfReprint +
+                        "," +
+                        publisher +
+                        "," +
+                        category;
+                    const percent = compare(
+                        stringToObjectSequence(changeAlias(strA)),
+                        stringToObjectSequence(changeAlias(strB))
+                    );
+                    if (percent > 50) {
+                        dt.percent = percent;
+                        return true;
+                    }
+                    return false;
+                });
+                return result.sort((a, b) => a.percent - b.percent);
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
         uniqueBook: async (parent, { id }, { req }, info) => {
             try {
                 const uniqueBookExisted = await UniqueBook.findOne({
@@ -38,6 +104,9 @@ module.exports = {
     Mutation: {
         createUniqueBook: async (parent, { dataCreate }, { req }) => {
             try {
+                if (!(await checkPermission(req, [ROLE.ADMIN]))) {
+                    return new AuthenticationError("User have not permission");
+                }
                 const uniqueBookExisted = await UniqueBook.findOne({
                     name: dataCreate.name,
                 });

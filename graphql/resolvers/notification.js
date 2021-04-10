@@ -8,10 +8,14 @@ const {
     Book,
     CommentPost,
     CommentBook,
+    NotificationBookAdmin,
+    UniqueBook,
 } = require("../../models");
 const { ApolloError, AuthenticationError } = require("apollo-server-express");
 const { ROLE } = require("../../constants");
-const { checkSignedIn } = require("../../helper/auth");
+const { checkSignedIn, checkPermission } = require("../../helper/auth");
+const { withFilter } = require("graphql-subscriptions");
+const { pubsub, TypeSub } = require("../configs");
 module.exports = {
     NotificationOrder: {
         to: async (parent, { id }, { req }, info) => {
@@ -47,6 +51,15 @@ module.exports = {
         commentBook: async (parent, { id }, { req }, info) => {
             try {
                 return await CommentBook.findOne({ _id: parent.commentBook });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+    },
+    NotificationBookAdmin: {
+        uniqueBook: async (parent, { id }, { req }, info) => {
+            try {
+                return await UniqueBook.findOne({ _id: parent.uniqueBook });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -107,6 +120,16 @@ module.exports = {
                 return await NotificationBook.find({
                     to: req.user._id,
                 });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        notificationBookOfAdmin: async (parent, args, { req }, info) => {
+            try {
+                if (!(await checkPermission(req, ROLE.ADMIN))) {
+                    return new AuthenticationError("User not authenticated");
+                }
+                return await NotificationBookAdmin.find();
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -194,6 +217,23 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
+        seenNotificationBookAdmin: async (parent, { id }, { req }) => {
+            try {
+                if (!(await checkPermission(req, ROLE.ADMIN))) {
+                    return new AuthenticationError("User not authenticated");
+                }
+                const notifiExisted = await NotificationBookAdmin.findOne({
+                    _id: id,
+                });
+                if (notifiExisted) {
+                    return new ApolloError("Notifi not found", 404);
+                }
+                (notifiExisted.seen = true), await notifiExisted.save();
+                return { message: "Success" };
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
         seenNotificationPost: async (parent, { id, name }, { req }) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
@@ -229,6 +269,21 @@ module.exports = {
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
+        },
+    },
+    Subscription: {
+        receiveNotificationBookAdmin: {
+            resolve: (payload) => payload.content,
+            subscribe: withFilter(
+                () => pubsub.asyncIterator(TypeSub.CREATEBOOK),
+                async (payload, variables) => {
+                    const userExisted = await User.findOne({
+                        _id: variables.userId,
+                        role: "ADMIN",
+                    });
+                    return !!userExisted;
+                }
+            ),
         },
     },
 };

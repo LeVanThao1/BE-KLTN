@@ -5,6 +5,7 @@ module.exports = gql`
     type Query {
         uniqueBook(id: ID!): UniqueBook!
         uniqueBooks: [UniqueBook!]!
+        getRecomment(dataUniqueBook: UniqueBookCreate!): [UniqueBook!]!
     }
     type Mutation {
         createUniqueBook(dataCreate: UniqueBookCreate!): Result!
@@ -23,6 +24,7 @@ module.exports = gql`
         createdAt: DateTime!
         updatedAt: DateTime!
         deletedAt: DateTime
+        percent: Int
     }
     input UniqueBookCreate {
         name: String!

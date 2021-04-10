@@ -4,7 +4,6 @@ const Book = mongoose.Schema(
     {
         book: {
             type: mongoose.Types.ObjectId,
-            required: [true, "please enter book"],
             ref: "uniqueBook",
         },
         store: {
@@ -29,6 +28,31 @@ const Book = mongoose.Schema(
         },
         deletedAt: {
             type: Date,
+        },
+        name: {
+            type: String,
+        },
+        images: [
+            {
+                type: String,
+            },
+        ],
+        year: {
+            type: String,
+        },
+        numberOfReprint: {
+            type: Number,
+            min: 0,
+        },
+        publisher: {
+            type: String,
+        },
+        category: {
+            type: mongoose.Types.ObjectId,
+            ref: "category",
+        },
+        description: {
+            type: String,
         },
     },
     {
