@@ -64,6 +64,7 @@ module.exports = {
                     query.store = store;
                 }
                 return await Book.find(query);
+                return a;
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -99,7 +100,7 @@ module.exports = {
                 return await Book.find({
                     $or: [
                         { book: { $in: idUnique } },
-                        { category: { $in: idUnique } },
+                        { category: { $in: id } },
                     ],
                 });
             } catch (e) {
@@ -149,8 +150,14 @@ module.exports = {
                 if (!store) {
                     return new ApolloError("You have not store", 400);
                 }
+                const query = {
+                    "$or": [{ name: dataBook.name }]
+                }
+                if (dataBook.book) {
+                    query["$or"] = [...query["$or"], {book: dataBook.book}]
+                }
                 const bookExisted = await Book.findOne({
-                    $or: [{ book: dataBook.book }, { name: dataBook.name }],
+                    ...query,
                     store: store._id,
                     deletedAt: undefined,
                 });

@@ -415,7 +415,7 @@ module.exports = {
                     return new AuthenticationError("User not authenticated");
                 }
                 await User.updateOne({ _id: req.user._id }, { cart: dataCart });
-                return { message: "Change password success" };
+                return { message: "Change cart success" };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

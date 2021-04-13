@@ -38,17 +38,6 @@ function stringToObjectSequence(str) {
     }, {});
 }
 
-let strA = "Lê Văn son"; //input từ app
-let strB = "Hôm nay trên thao trường, tôi nằm trên tấm ván lẹ tuông rơi"; //chuỗi trong uniqueBook
-
-//ví dụ
-console.log(
-    compare(
-        stringToObjectSequence(changeAlias(strA)),
-        stringToObjectSequence(changeAlias(strB))
-    )
-);
-
 module.exports = {
     compare,
     stringToObjectSequence,

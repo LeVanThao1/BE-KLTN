@@ -35,7 +35,7 @@ module.exports = gql`
         updateUserInfo(userUpdate: UserUpdate!): Result!
         resetPassword(token: String!, password: String!): Result!
         changePassword(oldPassword: String!, newPassword: String!): Result!
-        updateCart(dataCart: DetailUpdate!): Result!
+        updateCart(dataCart: [DetailUpdate!]!): Result!
     }
     input UserInput {
         email: String
