@@ -7,6 +7,7 @@ const {
     stringToObjectSequence,
     changeAlias,
 } = require("../../helper/compareString");
+const { toUnsigned } = require("../../helper/common");
 module.exports = {
     UniqueBook: {
         category: async (parent, { id }, { req }, info) => {
@@ -113,7 +114,7 @@ module.exports = {
                 if (uniqueBookExisted) {
                     return new ApolloError("Unique book already existed", 400);
                 }
-
+                dataCreate.unsignedName = toUnsigned(dataCreate.name)
                 const newUniqueBook = new UniqueBook({
                     ...dataCreate,
                 });
@@ -136,6 +137,9 @@ module.exports = {
                     );
                 }
 
+                if(dataUpdate.name) {
+                    dataUpdate.unsignedName = toUnsigned(dataUpdate.name)
+                }
                 for (let key in dataUpdate) {
                     if (Array.isArray(dataUpdate[key])) {
                         if (data[key].length === 0) {

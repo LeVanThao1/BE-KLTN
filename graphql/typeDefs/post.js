@@ -7,6 +7,7 @@ module.exports = gql`
         posts(userId: ID): [Post!]!
         postsByAdmin: [Post!]!
         postByAdmin(id: ID!): [Post!]
+        searchPost(description: String!): [Post!]!
     }
     type Mutation {
         createPost(dataPost: dataCreatePost!): Result!

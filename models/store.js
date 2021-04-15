@@ -7,6 +7,10 @@ const Store = mongoose.Schema(
             required: [true, "please enter title"],
             unique: true,
         },
+        unsignedName: {
+            type: String,
+            default: null
+        },
         avatar: {
             type: String,
             required: [true, "please enter avatar"],

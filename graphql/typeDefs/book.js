@@ -8,6 +8,8 @@ module.exports = gql`
         bookByAdmin(id: ID!): Book!
         booksByAdmin: [Book!]!
         booksByCategory(id: ID!): [Book!]!
+        bookByName(name: String!): [Book!]!
+        bookByInterest(name: String!): [Book!]!
     }
     type Mutation {
         createBook(dataBook: BookCreate!): Result!

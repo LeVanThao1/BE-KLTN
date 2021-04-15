@@ -14,6 +14,10 @@ const NotificationBookAdmin = mongoose.Schema(
             name: {
                 type: String,
             },
+            unsignedName: {
+                type: String,
+                default: null
+            },
             images: [
                 {
                     type: String,

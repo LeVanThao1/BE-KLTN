@@ -2,6 +2,7 @@ const { Store, User, Book } = require("../../models");
 const { ApolloError, AuthenticationError } = require("apollo-server-express");
 const { ROLE } = require("../../constants");
 const { checkPermission } = require("../../helper/auth");
+const { toUnsigned } = require("../../helper/common");
 module.exports = {
     Store: {
         owner: async (parent, { id }, { req }, info) => {
@@ -93,6 +94,7 @@ module.exports = {
 
                 const newStore = new Store({
                     ...dataStore,
+                    unsignedName: toUnsigned(dataStore.name)
                 });
                 await newStore.save();
                 return { message: "Create store success" };

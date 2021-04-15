@@ -2,6 +2,7 @@ const { UniqueBook, User, Post, Category } = require('../../models');
 const { ApolloError, AuthenticationError } = require('apollo-server-express');
 const { ROLE } = require('../../constants');
 const { checkPermission, checkSignedIn } = require('../../helper/auth');
+const { toUnsigned } = require('../../helper/common');
 module.exports = {
     Post: {
         uniqueBook: async (parent, { id }, { req }, info) => {
@@ -34,6 +35,16 @@ module.exports = {
         },
     },
     Query: {
+        searchPost: async (parent, { description }, { req }, info) => {
+            try {
+                const unsignedDescription = toUnsigned(description)
+                return postExisted = await Post.find({
+                    unsignedDescription: {$regex: unsignedDescription, $options: 'i'}
+                });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
         post: async (parent, { id }, { req }, info) => {
             try {
                 const postExisted = await Post.findOne({
@@ -96,14 +107,18 @@ module.exports = {
                 }
                 let dataNewPost = {
                     title: dataPost.title,
+                    unsignedTitle: toUnsigned(dataPost.title),
                     price: dataPost.price,
                     description: dataPost.description,
+                    unsignedDescription: toUnsigned(dataPost.description),
                     images: dataPost.images,
+                    bookWanna : dataPost.bookWanna
                 };
                 if (dataPost.uniqueBook)
                     dataNewPost.uniqueBook = dataPost.uniqueBook;
                 else {
                     dataNewPost.name = dataPost.name;
+                    dataNewPost.unsignedName = toUnsigned(dataPost.name)
                     dataNewPost.year = dataPost.year;
                     dataNewPost.numberOfReprint = dataPost.numberOfReprint;
                     dataNewPost.publisher = dataPost.publisher;
@@ -135,6 +150,15 @@ module.exports = {
                 }
                 if (!post) {
                     return new ApolloError('Post not found', 404);
+                }
+                if(dataPost.name) {
+                    dataPost.unsignedName = toUnsigned(dataPost.name)
+                }
+                if(dataPost,description) {
+                    dataPost.unsignedDescription = toUnsigned(dataPost.description)
+                }
+                if(dataPost.title) {
+                    dataPost.unsignedTitle = toUnsigned(dataPost.title)
                 }
                 for (let key in dataPost) {
                     if (Array.isArray(dataPost[key])) {

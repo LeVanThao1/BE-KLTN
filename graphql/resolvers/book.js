@@ -9,6 +9,7 @@ const { ApolloError, AuthenticationError } = require('apollo-server-express');
 const { ROLE } = require('../../constants');
 const { checkPermission } = require('../../helper/auth');
 const { pubsub, TypeSub } = require('../configs');
+const { toUnsigned } = require('../../helper/common');
 module.exports = {
     Book: {
         book: async (parent, { id }, { req }, info) => {
@@ -79,6 +80,35 @@ module.exports = {
                     return new ApolloError('Book not found', 404);
                 }
                 return bookExisted;
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        bookByName: async(parent, { name }, { req }, info) => {
+            try {
+                const unsignedName = toUnsigned(name)
+                const bookExisted = await Book.find().populate({
+                    path: "book"
+                });
+                const globalRegex = new RegExp(unsignedName, 'i');
+                return bookExisted.filter((bk) => globalRegex.test(bk.name ? bk.unsignedName : bk.book.unsignedName));
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        bookByInterest: async(parent, { }, { req }, info) => {
+            try {
+                if (!(await checkSignedIn(req, true))) {
+                    return new AuthenticationError("User have not permission");
+                }
+                const uniqueBook = await UniqueBook.find({ category: { $in : req.user.interests} });
+                const idUnique = uniqueBook.map((dt) => dt._id);
+                return await Book.find({
+                    $or: [
+                        { book: { $in: idUnique } },
+                        { category: { $in: req.user.interests } },
+                    ],
+                });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -174,6 +204,7 @@ module.exports = {
                     dataNewBook.publisher = dataBook.publisher;
                     dataNewBook.category = dataBook.category;
                     dataNewBook.description = dataBook.description;
+                    dataNewBook.unsignedName = toUnsigned(dataBook.name)
                 }
                 const newBook = new Book({
                     ...dataNewBook,
@@ -185,7 +216,7 @@ module.exports = {
 
                 if (!dataBook.book) {
                     let dataNotify = {
-                        data: dataNewBook,
+                        data: { ...dataNewBook, unsignedName : toUnsigned(dataNewBook.name)},
                         seen: false,
                     };
                     const uniqueBook = await UniqueBook.findOne({

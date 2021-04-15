@@ -6,6 +6,10 @@ const UniqueBook = mongoose.Schema(
             type: String,
             required: [true, "please enter title"],
         },
+        unsignedName: {
+            type: String,
+            required: [true, "please enter unsignedName"],
+        },
         images: [
             {
                 type: String,
