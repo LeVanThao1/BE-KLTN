@@ -299,12 +299,12 @@ module.exports = {
                 );
                 const otp = (Date.now() + "").slice(7);
                 const newUser = new User({
-                    ...args.newUser,
+                    name: args.newUser.name,
                     password: hashPassword,
                     otp,
                     expired: new Date(moment().add(5, "minutes")),
-                    email: args.type ? "" : args.newUser.email,
-                    phone: args.type ? args.newUser.phone : "",
+                    email: args.type ? null : args.newUser.email,
+                    phone: args.type ? args.newUser.phone : null,
                 });
                 if (args.type) {
                     await client.messages

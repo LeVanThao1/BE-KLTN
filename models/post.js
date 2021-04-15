@@ -47,6 +47,10 @@ const Post = mongoose.Schema(
             required: [true, 'please author'],
             ref: 'user',
         },
+        bookWanna: [{
+            type: String,
+            required: [true, 'please book want to exchange'],
+        }],
         deletedAt: {
             type: Date,
         },
