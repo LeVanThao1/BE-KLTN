@@ -1,4 +1,4 @@
-const { gql } = require("apollo-server-express");
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
     scalar DateTime
@@ -19,17 +19,6 @@ module.exports = gql`
     type Subscription {
         receiveNotificationCommentBook(userId: ID!): NotificationBook!
         receiveNotificationCommentPost(userId: ID!): NotificationPost!
-    }
-    type Post {
-        id: ID!
-        title: String!
-        uniqueBook: UniqueBook!
-        description: String!
-        images: [String!]
-        author: User!
-        createdAt: DateTime!
-        updatedAt: DateTime!
-        deletedAt: DateTime
     }
     type CommentPost {
         id: ID!

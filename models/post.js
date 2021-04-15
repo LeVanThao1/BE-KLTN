@@ -1,15 +1,14 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Post = mongoose.Schema(
     {
         title: {
             type: String,
-            required: [true, "please enter title"],
+            required: [true, 'please enter title'],
         },
         uniqueBook: {
             type: mongoose.Types.ObjectId,
-            required: [true, "please enter unique book"],
-            ref: "uniqueBook",
+            ref: 'uniqueBook',
         },
         images: [
             {
@@ -18,12 +17,35 @@ const Post = mongoose.Schema(
         ],
         description: {
             type: String,
-            required: [true, "please enter description"],
+            required: [true, 'please enter description'],
+        },
+        name: {
+            type: String,
+            // required: [true, 'please enter name'],
+        },
+        year: {
+            type: String,
+        },
+        numberOfReprint: {
+            type: Number,
+            min: 0,
+        },
+        publisher: {
+            type: String,
+        },
+        category: {
+            type: mongoose.Types.ObjectId,
+            ref: 'category',
+        },
+        price: {
+            type: Number,
+            min: 0,
+            required: [true, 'please enter price'],
         },
         author: {
             type: mongoose.Types.ObjectId,
-            required: [true, "please author"],
-            ref: "user",
+            required: [true, 'please author'],
+            ref: 'user',
         },
         deletedAt: {
             type: Date,
@@ -34,4 +56,4 @@ const Post = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("post", Post);
+module.exports = mongoose.model('post', Post);

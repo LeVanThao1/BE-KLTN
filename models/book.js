@@ -1,25 +1,25 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Book = mongoose.Schema(
     {
         book: {
             type: mongoose.Types.ObjectId,
-            ref: "uniqueBook",
+            ref: 'uniqueBook',
         },
         store: {
             type: mongoose.Types.ObjectId,
-            required: [true, "please enter store"],
-            ref: "store",
+            required: [true, 'please enter store'],
+            ref: 'store',
         },
         amount: {
             type: Number,
             min: 0,
-            required: [true, "please enter amount"],
+            required: [true, 'please enter amount'],
         },
         price: {
             type: Number,
             min: 0,
-            required: [true, "please enter price"],
+            required: [true, 'please enter price'],
         },
         sold: {
             type: Number,
@@ -49,7 +49,7 @@ const Book = mongoose.Schema(
         },
         category: {
             type: mongoose.Types.ObjectId,
-            ref: "category",
+            ref: 'category',
         },
         description: {
             type: String,
@@ -60,4 +60,4 @@ const Book = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("book", Book);
+module.exports = mongoose.model('book', Book);

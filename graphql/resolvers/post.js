@@ -1,12 +1,14 @@
-const { UniqueBook, User, Post } = require("../../models");
-const { ApolloError, AuthenticationError } = require("apollo-server-express");
-const { ROLE } = require("../../constants");
-const { checkPermission, checkSignedIn } = require("../../helper/auth");
+const { UniqueBook, User, Post, Category } = require('../../models');
+const { ApolloError, AuthenticationError } = require('apollo-server-express');
+const { ROLE } = require('../../constants');
+const { checkPermission, checkSignedIn } = require('../../helper/auth');
 module.exports = {
     Post: {
         uniqueBook: async (parent, { id }, { req }, info) => {
             try {
-                return await UniqueBook.findById(parent.uniqueBook);
+                return parent.uniqueBook
+                    ? await UniqueBook.findById(parent.uniqueBook)
+                    : {};
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -14,7 +16,17 @@ module.exports = {
         author: async (parent, { id }, { req }, info) => {
             try {
                 return await User.findById(parent.author).select(
-                    "-password -role"
+                    '-password -role'
+                );
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        category: async (parent, { id }, { req }, info) => {
+            try {
+                return (
+                    parent.category &&
+                    (await Category.findById(parent.category))
                 );
             } catch (e) {
                 return new ApolloError(e.message, 500);
@@ -29,7 +41,7 @@ module.exports = {
                     deletedAt: undefined,
                 });
                 if (!postExisted) {
-                    return new ApolloError("Post not found", 404);
+                    return new ApolloError('Post not found', 404);
                 }
                 return postExisted;
             } catch (e) {
@@ -52,7 +64,7 @@ module.exports = {
         postsByAdmin: async (parent, { userId }, { req }, info) => {
             try {
                 if (!(await checkPermission(req, [ROLE.ADMIN]))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 return await Post.find();
             } catch (e) {
@@ -62,13 +74,13 @@ module.exports = {
         postByAdmin: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkPermission(req, [ROLE.ADMIN]))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 const postExisted = await Post.findOne({
                     _id: id,
                 });
                 if (!postExisted) {
-                    return new ApolloError("Post not found", 404);
+                    return new ApolloError('Post not found', 404);
                 }
                 return postExisted;
             } catch (e) {
@@ -80,14 +92,31 @@ module.exports = {
         createPost: async (parent, { dataPost }, { req }) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("You have not permission");
+                    return new AuthenticationError('You have not permission');
                 }
+                let dataNewPost = {
+                    title: dataPost.title,
+                    price: dataPost.price,
+                    description: dataPost.description,
+                    images: dataPost.images,
+                };
+                if (dataPost.uniqueBook)
+                    dataNewPost.uniqueBook = dataPost.uniqueBook;
+                else {
+                    dataNewPost.name = dataPost.name;
+                    dataNewPost.year = dataPost.year;
+                    dataNewPost.numberOfReprint = dataPost.numberOfReprint;
+                    dataNewPost.publisher = dataPost.publisher;
+                    dataNewPost.category = dataPost.category;
+                    dataNewPost.uniqueBook = null;
+                }
+
                 const newPost = new Post({
-                    ...dataPost,
+                    ...dataNewPost,
                     author: req.user._id,
                 });
                 await newPost.save();
-                return { message: "Create post success" };
+                return { message: 'Create post success' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -95,17 +124,17 @@ module.exports = {
         updatePost: async (parent, { dataPost, id }, { req }) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("You have not permission");
+                    return new AuthenticationError('You have not permission');
                 }
                 const post = await Post.findOne({
                     _id: id,
                     deletedAt: undefined,
                 });
-                if (post.author + "" !== req.user._id + "") {
-                    return new ApolloError("You have not permission", 404);
+                if (post.author + '' !== req.user._id + '') {
+                    return new ApolloError('You have not permission', 404);
                 }
                 if (!post) {
-                    return new ApolloError("Post not found", 404);
+                    return new ApolloError('Post not found', 404);
                 }
                 for (let key in dataPost) {
                     if (Array.isArray(dataPost[key])) {
@@ -125,7 +154,7 @@ module.exports = {
                     },
                     dataPost
                 );
-                return { message: "Update post success!" };
+                return { message: 'Update post success!' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -133,24 +162,24 @@ module.exports = {
         deletePost: async (parent, { id }, { req }) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("You have not permission");
+                    return new AuthenticationError('You have not permission');
                 }
                 const post = await Post.findOne({
                     _id: id,
                     deletedAt: undefined,
                 });
                 if (!post) {
-                    return new ApolloError("Post not found", 404);
+                    return new ApolloError('Post not found', 404);
                 }
-                if (post.author + "" !== req.user._id + "") {
-                    return new ApolloError("You have not permission", 404);
+                if (post.author + '' !== req.user._id + '') {
+                    return new ApolloError('You have not permission', 404);
                 }
                 await Post.updateOne(
                     { _id: id, author: req.user._id, deletedAt: undefined },
                     { deletedAt: new Date() }
                 );
 
-                return { message: "Delete post success!" };
+                return { message: 'Delete post success!' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

@@ -1,4 +1,4 @@
-const { gql } = require("apollo-server-express");
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
     scalar DateTime
@@ -14,16 +14,45 @@ module.exports = gql`
         deletePost(id: ID!): Result!
     }
 
-    input dataCreatePost {
+    type Post {
+        id: ID!
         title: String!
-        uniqueBook: ID!
+        name: String
+        uniqueBook: UniqueBook
+        year: String
+        numberOfReprint: Int
+        publisher: String
+        category: ID
         description: String!
         images: [String!]
+        author: User!
+        createdAt: DateTime!
+        updatedAt: DateTime!
+        deletedAt: DateTime
+    }
+
+    input dataCreatePost {
+        title: String!
+        uniqueBook: ID
+        description: String!
+        images: [String!]
+        year: String
+        name: String
+        numberOfReprint: Int
+        publisher: String
+        category: ID
+        price: Float!
     }
     input dataUpdatePost {
+        images: [String!]
+        year: String
+        numberOfReprint: Int
+        publisher: String
+        name: String
+        category: ID
+        description: String
         title: String
         uniqueBook: ID
-        description: String
-        images: [String!]
+        price: Float
     }
 `;
