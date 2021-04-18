@@ -18,11 +18,6 @@ const Post = mongoose.Schema(
             type: String,
             default: null
         },
-        uniqueBook: {
-            type: mongoose.Types.ObjectId,
-            ref: 'uniqueBook',
-            default: null
-        },
         images: [
             {
                 type: String,
@@ -34,26 +29,30 @@ const Post = mongoose.Schema(
         },
         name: {
             type: String,
-            default: null
-            // required: [true, 'please enter name'],
+            default: null,
+            required: [true, 'please enter name'],
         },
         year: {
             type: String,
-            default: null
+            default: null,
+            required: [true, 'please enter year'],
         },
         numberOfReprint: {
             type: Number,
             min: 0,
-            default: null
+            default: null,
+            required: [true, 'please enter year'],
         },
         publisher: {
             type: String,
-            default: null
+            default: null,
+            required: [true, 'please enter year'],
         },
         category: {
             type: mongoose.Types.ObjectId,
             ref: 'category',
-            default: null
+            default: null,
+            required: [true, 'please enter year'],
         },
         price: {
             type: Number,

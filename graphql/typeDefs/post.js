@@ -19,11 +19,10 @@ module.exports = gql`
         id: ID!
         title: String!
         name: String
-        uniqueBook: UniqueBook
         year: String
         numberOfReprint: Int
         publisher: String
-        category: ID
+        category: Category
         description: String!
         images: [String!]
         author: User!
@@ -35,7 +34,6 @@ module.exports = gql`
 
     input dataCreatePost {
         title: String!
-        uniqueBook: ID
         description: String!
         images: [String!]
         year: String
@@ -56,7 +54,6 @@ module.exports = gql`
         description: String
         title: String
         bookWanna: [String!]
-        uniqueBook: ID
         price: Float
     }
 `;

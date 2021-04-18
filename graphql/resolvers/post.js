@@ -114,22 +114,19 @@ module.exports = {
                     images: dataPost.images,
                     bookWanna : dataPost.bookWanna
                 };
-                if (dataPost.uniqueBook)
-                    dataNewPost.uniqueBook = dataPost.uniqueBook;
-                else {
-                    dataNewPost.name = dataPost.name;
-                    dataNewPost.unsignedName = toUnsigned(dataPost.name)
-                    dataNewPost.year = dataPost.year;
-                    dataNewPost.numberOfReprint = dataPost.numberOfReprint;
-                    dataNewPost.publisher = dataPost.publisher;
-                    dataNewPost.category = dataPost.category;
-                    dataNewPost.uniqueBook = null;
-                }
+                
+                dataNewPost.name = dataPost.name;
+                dataNewPost.unsignedName = toUnsigned(dataPost.name)
+                dataNewPost.year = dataPost.year;
+                dataNewPost.numberOfReprint = dataPost.numberOfReprint;
+                dataNewPost.publisher = dataPost.publisher;
+                dataNewPost.category = dataPost.category;
 
                 const newPost = new Post({
                     ...dataNewPost,
                     author: req.user._id,
                 });
+                
                 await newPost.save();
                 return { message: 'Create post success' };
             } catch (e) {

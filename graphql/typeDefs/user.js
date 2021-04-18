@@ -1,4 +1,4 @@
-const { gql } = require("apollo-server-express");
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
     scalar DateTime
@@ -35,7 +35,7 @@ module.exports = gql`
         updateUserInfo(userUpdate: UserUpdate!): Result!
         resetPassword(token: String!, password: String!): Result!
         changePassword(oldPassword: String!, newPassword: String!): Result!
-        updateCart(dataCart: [DetailUpdate!]!): Result!
+        updateCart(dataCart: [DetailUpdate!]!): [Detail!]!
     }
     input UserInput {
         email: String
