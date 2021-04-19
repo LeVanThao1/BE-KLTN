@@ -24,6 +24,7 @@ module.exports = gql`
         publisher: String
         category: Category
         description: String!
+        price: Float
         images: [String!]
         author: User!
         bookWanna: [String]!
