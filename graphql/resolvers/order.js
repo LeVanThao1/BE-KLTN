@@ -79,6 +79,7 @@ module.exports = {
                                 detail: dataOrder.subOrder[i],
                                 address: dataOrder.address,
                                 phone: dataOrder.phone,
+                                name: dataOrder.name
                             });
                             await newSubOrder.save();
                             const newNotification = new NotificationOrder({

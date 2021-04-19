@@ -7,6 +7,10 @@ const Order = mongoose.Schema(
 			required: [true, "please enter user"],
             ref:"user"
 		},
+        name: {
+            type: String,
+            required: [true, "name is required"]
+        },
         subOrder: [
             {
                 type: mongoose.Types.ObjectId,

@@ -21,6 +21,7 @@ module.exports = gql`
         id: ID!
         user: User!
         subOrder: [SubOrder!]!
+        name: String!
         address: String!
         total: Float!
         phone: String!
@@ -29,6 +30,7 @@ module.exports = gql`
         deletedAt: DateTime
     }
     input OrderCreate {
+        name: String!
         address: String!
         phone: String!
         subOrder: [DetailUpdate!]!
