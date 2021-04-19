@@ -128,7 +128,7 @@ module.exports = {
                 });
                 
                 await newPost.save();
-                return { message: 'Create post success' };
+                return newPost;
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

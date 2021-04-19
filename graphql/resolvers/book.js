@@ -244,7 +244,7 @@ module.exports = {
                         content: newNotificationAdmin,
                     });
                 }
-                return { message: 'Create book success' };
+                return newBook;
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

@@ -12,7 +12,7 @@ module.exports = gql`
         bookByInterest(name: String!): [Book!]!
     }
     type Mutation {
-        createBook(dataBook: BookCreate!): Result!
+        createBook(dataBook: BookCreate!): Book!
         updateBook(dataBook: BookUpdate!, id: ID!): Result!
         deleteBook(id: ID!): Result!
         createBookOther(

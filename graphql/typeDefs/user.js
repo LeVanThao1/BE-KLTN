@@ -43,12 +43,16 @@ module.exports = gql`
         phone: String
         password: String!
         interests: [ID]
+        dateOfBirth: DateTime
+        gender: GENDER
     }
     input UserUpdate {
         name: String
         avatar: String
         address: String
         interests: [ID]
+        dateOfBirth: DateTime
+        gender: GENDER
     }
     enum ROLE {
         ADMIN
@@ -58,11 +62,18 @@ module.exports = gql`
     type Result {
         message: String!
     }
+    enum GENDER {
+        MALE
+        FEMALE
+        OTHER
+    }
     type User {
         id: ID!
         email: String
         name: String!
         avatar: String
+        dateOfBirth: DateTime
+        gender: GENDER
         phone: String
         password: String
         address: String

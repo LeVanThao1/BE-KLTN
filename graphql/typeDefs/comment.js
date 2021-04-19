@@ -11,9 +11,9 @@ module.exports = gql`
         commentsPostByAdmin: [CommentPost!]!
     }
     type Mutation {
-        createCommentBook(dataComment: dataComment!, bookId: ID!): Result!
+        createCommentBook(dataComment: dataComment!, bookId: ID!): CommentBook!
         replyCommentBook(dataComment: dataComment!, commentId: ID!): Result!
-        createCommentPost(dataComment: dataComment!, postId: ID!): Result!
+        createCommentPost(dataComment: dataComment!, postId: ID!): CommentPost!
         replyCommentPost(dataComment: dataComment!, commentId: ID!): Result!
     }
     type Subscription {
