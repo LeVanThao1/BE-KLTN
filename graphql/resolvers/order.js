@@ -150,12 +150,15 @@ const checkOrder = async (subOrder) => {
                     path: "owner",
                 },
             });
-        products.sort((a, b) => a.book - b.book);
         for (let i = 0; i < products.length; i++) {
-            if (products[i].price !== getProducts[i].price) {
+            const find = products.find((el) => el.book +"" === getProducts[i]._id + "")
+            if(!find) {
+                return []
+            }
+            if (find.price !== getProducts[i].price) {
                 return [];
             }
-            if (products[i].amount > getProducts[i].amount) {
+            if (find.amount > getProducts[i].amount) {
                 return [];
             }
         }
