@@ -47,6 +47,19 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
+        subOrdersByUser: async (parent, { id }, { req }, info) => {
+            try {
+                if (!(await checkSignedIn(req, true))) {
+                    return new AuthenticationError("You have not permission");
+                }
+                return await SubOrder.find({
+                    user: req.user._id,
+                    deletedAt: undefined,
+                });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
     },
     Mutation: {
         updateStatusSubOrder: async (

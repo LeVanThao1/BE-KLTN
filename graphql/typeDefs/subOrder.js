@@ -4,6 +4,7 @@ module.exports = gql`
     scalar DateTime
     type Query {
         subOrderByUser(id: ID!): SubOrder!
+        subOrdersByUser: [SubOrder!]!
     }
     type Mutation {
         updateStatusSubOrder(dataStatus: STATUS!, id: ID!): Result!
