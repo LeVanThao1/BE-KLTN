@@ -4,6 +4,7 @@ const {
     Book,
     NotificationBookAdmin,
     Category,
+    CommentBook,
 } = require('../../models');
 const { ApolloError, AuthenticationError } = require('apollo-server-express');
 const { ROLE } = require('../../constants');
@@ -32,6 +33,13 @@ module.exports = {
                     parent.category &&
                     (await Category.findById(parent.category))
                 );
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        comment: async (parent, { id }, { req }, info) => {
+            try {
+                return await CommentBook.find({book: parent.id})
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

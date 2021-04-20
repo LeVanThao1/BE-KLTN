@@ -152,6 +152,7 @@ module.exports = {
                 }
                 const bookExisted = await Book.findOne({
                     _id: bookId,
+                    deletedAt: undefined
                 }).populate({
                     path: "store",
                     populate: {
@@ -187,7 +188,7 @@ module.exports = {
                     });
                 }
 
-                return { message: "Comment success" };
+                return newCommentBook;
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -271,6 +272,7 @@ module.exports = {
                 }
                 const postExisted = await Post.findOne({
                     _id: postId,
+                    deletedAt: undefined
                 }).populate({
                     select: "-password -role",
                     path: "author",
@@ -301,7 +303,7 @@ module.exports = {
                     });
                 }
 
-                return { message: "Comment success" };
+                return newCommentPost;
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

@@ -1,4 +1,4 @@
-const { UniqueBook, User, Post, Category } = require('../../models');
+const { UniqueBook, User, Post, Category, CommentPost } = require('../../models');
 const { ApolloError, AuthenticationError } = require('apollo-server-express');
 const { ROLE } = require('../../constants');
 const { checkPermission, checkSignedIn } = require('../../helper/auth');
@@ -29,6 +29,13 @@ module.exports = {
                     parent.category &&
                     (await Category.findById(parent.category))
                 );
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        comment: async (parent, { id }, { req }, info) => {
+            try {
+                return await CommentPost.find({post: parent.id})
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

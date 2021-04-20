@@ -27,6 +27,7 @@ module.exports = gql`
         price: Float
         images: [String!]
         author: User!
+        comment: [CommentPost]
         bookWanna: [String]!
         createdAt: DateTime!
         updatedAt: DateTime!
