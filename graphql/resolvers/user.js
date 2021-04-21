@@ -51,7 +51,6 @@ module.exports = {
         },
         notifications: async (parent, args, { req }, info) => {
             try {
-                console.log(req.user);
                 const a = {
                     order: await NotificationOrder.find({ to: parent.id }),
                     book: await NotificationBook.find({
