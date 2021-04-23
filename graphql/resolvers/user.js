@@ -24,6 +24,7 @@ const {
 const { ROLE } = require('../../constants');
 const sendEmail = require('../../helper/mailer');
 const moment = require('moment');
+const user = require('../../models/user');
 module.exports = {
     Detail: {
         book: async (parent, args, { req }, info) => {
@@ -61,6 +62,13 @@ module.exports = {
                     }),
                 };
                 return a;
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        likes: async (parent, args, { req }, info) => {
+            try {
+                return await Book.find({ _id: { $in: parent.likes } });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -233,7 +241,8 @@ module.exports = {
                 } else {
                     sendEmail(email, otp);
                 }
-                return { message: 'Send otp to phone number' };
+                await User.updateOne(query, { otp: otp, expired: new Date(moment().add(5, 'minutes')) });
+                return { message: 'Send otp to phone number or mail' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -372,8 +381,13 @@ module.exports = {
                         'User password reset information is not valid.'
                     );
                 }
+                if (moment(req.user.expired) < new Date()) {
+                    return new ApolloError('Token is expired', '400');
+                }
                 const hashPassword = await bcrypt.hash(password, 12);
                 req.user.password = hashPassword;
+                req.user.expired = null;
+                req.user.otp = null
                 await req.user.save();
                 return { message: 'Reset password success' };
             } catch (e) {
@@ -415,6 +429,32 @@ module.exports = {
                 }
                 await User.updateOne({ _id: req.user._id }, { cart: dataCart });
                 return dataCart;
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        addToLike: async (parent, { id }, { req }) => {
+            try {
+                if (!(await checkSignedIn(req, true, true))) {
+                    return new AuthenticationError('User not authenticated');
+                }
+                req.user.likes.push(id);
+                await req.user.save();
+                return { message: 'Like success' };
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        removeToLike: async (parent, { id }, { req }) => {
+            try {
+                if (!(await checkSignedIn(req, true, true))) {
+                    return new AuthenticationError('User not authenticated');
+                }
+                req.user.likes = req.user.likes.filter(
+                    (lk) => lk + '' !== id + ''
+                );
+                await req.user.save();
+                return { message: 'Like success' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

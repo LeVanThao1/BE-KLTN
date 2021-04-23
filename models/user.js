@@ -1,36 +1,36 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const User = mongoose.Schema(
     {
         name: {
             type: String,
             trim: true,
-            required: [true, "please enter name"],
+            required: [true, 'please enter name'],
         },
         avatar: {
             type: String,
             default:
-                "https://res.cloudinary.com/thaovan/image/upload/v1606099416/Dinosuar_shop/avatar/male.jpg",
+                'https://res.cloudinary.com/thaovan/image/upload/v1606099416/Dinosuar_shop/avatar/male.jpg',
         },
         email: {
             type: String,
             trim: true,
             // required: [true, "please enter email"],
             unique: true,
-            default: null
+            default: null,
         },
         phone: {
             type: String,
             length: 10,
             // required: [true, "please enter phone"],
             unique: true,
-            default: null
+            default: null,
         },
         password: {
             type: String,
             min: 8,
             max: 30,
-            required: [true, "please enter password"],
+            required: [true, 'please enter password'],
         },
         address: {
             type: String,
@@ -39,8 +39,8 @@ const User = mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ["ADMIN", "MEMBER", "STORE"],
-            default: "MEMBER",
+            enum: ['ADMIN', 'MEMBER', 'STORE'],
+            default: 'MEMBER',
         },
         otp: {
             type: String,
@@ -61,23 +61,29 @@ const User = mongoose.Schema(
             {
                 book: {
                     type: mongoose.Types.ObjectId,
-                    required: [true, "please enter book"],
-                    ref: "book",
+                    required: [true, 'please enter book'],
+                    ref: 'book',
                 },
                 amount: {
                     type: Number,
-                    required: [true, "please enter amount"],
+                    required: [true, 'please enter amount'],
                 },
                 price: {
                     type: Number,
-                    required: [true, "please enter price"],
+                    required: [true, 'please enter price'],
                 },
             },
         ],
         interests: [
             {
                 type: mongoose.Types.ObjectId,
-                ref: "category",
+                ref: 'category',
+            },
+        ],
+        likes: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref: 'book',
             },
         ],
         deletedAt: {
@@ -89,4 +95,4 @@ const User = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("user", User);
+module.exports = mongoose.model('user', User);

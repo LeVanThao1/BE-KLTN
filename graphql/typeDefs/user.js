@@ -36,6 +36,8 @@ module.exports = gql`
         resetPassword(token: String!, password: String!): Result!
         changePassword(oldPassword: String!, newPassword: String!): Result!
         updateCart(dataCart: [DetailUpdate!]!): [Detail!]!
+        addToLike(id: ID!): Result!
+        removeToLike(id: ID!): Result!
     }
     input UserInput {
         email: String
@@ -86,6 +88,7 @@ module.exports = gql`
         createdAt: DateTime!
         updatedAt: DateTime!
         cart: [Detail!]
+        likes: [Book]
         isOnline: Boolean
         store: Store
         deletedAt: DateTime
