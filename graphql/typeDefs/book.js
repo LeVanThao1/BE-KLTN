@@ -10,6 +10,7 @@ module.exports = gql`
         booksByCategory(id: ID!): [Book!]!
         bookByName(name: String!): [Book!]!
         bookByInterest(name: String!): [Book!]!
+        bookSell: [Book!]!
     }
     type Mutation {
         createBook(dataBook: BookCreate!): Book!
@@ -35,7 +36,7 @@ module.exports = gql`
         amount: Float!
         price: Float!
         sold: Float!
-        comment:[CommentBook]
+        comment: [CommentBook]
         createdAt: DateTime!
         updatedAt: DateTime!
         deletedAt: DateTime

@@ -39,7 +39,7 @@ module.exports = {
         },
         comment: async (parent, { id }, { req }, info) => {
             try {
-                return await CommentBook.find({book: parent.id})
+                return await CommentBook.find({ book: parent.id });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -78,6 +78,17 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
+        bookSell: async (parent, {}, { req }, info) => {
+            try {
+                return await Book.find({ sold: { $gt: 0 } })
+                    .sort({
+                        sold: -1,
+                    })
+                    .limit(10);
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
         bookByAdmin: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkPermission(req, [ROLE.ADMIN]))) {
@@ -92,24 +103,30 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        bookByName: async(parent, { name }, { req }, info) => {
+        bookByName: async (parent, { name }, { req }, info) => {
             try {
-                const unsignedName = toUnsigned(name)
+                const unsignedName = toUnsigned(name);
                 const bookExisted = await Book.find().populate({
-                    path: "book"
+                    path: 'book',
                 });
                 const globalRegex = new RegExp(unsignedName, 'i');
-                return bookExisted.filter((bk) => globalRegex.test(bk.name ? bk.unsignedName : bk.book.unsignedName));
+                return bookExisted.filter((bk) =>
+                    globalRegex.test(
+                        bk.name ? bk.unsignedName : bk.book.unsignedName
+                    )
+                );
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
         },
-        bookByInterest: async(parent, { }, { req }, info) => {
+        bookByInterest: async (parent, {}, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
-                const uniqueBook = await UniqueBook.find({ category: { $in : req.user.interests} });
+                const uniqueBook = await UniqueBook.find({
+                    category: { $in: req.user.interests },
+                });
                 const idUnique = uniqueBook.map((dt) => dt._id);
                 return await Book.find({
                     $or: [
@@ -212,7 +229,7 @@ module.exports = {
                     dataNewBook.publisher = dataBook.publisher;
                     dataNewBook.category = dataBook.category;
                     dataNewBook.description = dataBook.description;
-                    dataNewBook.unsignedName = toUnsigned(dataBook.name)
+                    dataNewBook.unsignedName = toUnsigned(dataBook.name);
                 }
                 const newBook = new Book({
                     ...dataNewBook,
@@ -224,7 +241,10 @@ module.exports = {
 
                 if (!dataBook.book) {
                     let dataNotify = {
-                        data: { ...dataNewBook, unsignedName : toUnsigned(dataNewBook.name)},
+                        data: {
+                            ...dataNewBook,
+                            unsignedName: toUnsigned(dataNewBook.name),
+                        },
                         seen: false,
                     };
                     const uniqueBook = await UniqueBook.findOne({
