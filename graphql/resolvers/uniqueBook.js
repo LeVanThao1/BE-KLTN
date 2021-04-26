@@ -1,13 +1,13 @@
-const { UniqueBook, Category } = require("../../models");
-const { ApolloError, AuthenticationError } = require("apollo-server-express");
-const { ROLE } = require("../../constants");
-const { checkPermission } = require("../../helper/auth");
+const { UniqueBook, Category } = require('../../models');
+const { ApolloError, AuthenticationError } = require('apollo-server-express');
+const { ROLE } = require('../../constants');
+const { checkPermission } = require('../../helper/auth');
 const {
     compare,
     stringToObjectSequence,
     changeAlias,
-} = require("../../helper/compareString");
-const { toUnsigned } = require("../../helper/common");
+} = require('../../helper/compareString');
+const { toUnsigned } = require('../../helper/common');
 module.exports = {
     UniqueBook: {
         category: async (parent, { id }, { req }, info) => {
@@ -31,15 +31,15 @@ module.exports = {
                 } = dataUniqueBook;
                 const strA =
                     name +
-                    "," +
+                    ',' +
                     description +
-                    "," +
+                    ',' +
                     year +
-                    "," +
+                    ',' +
                     numberOfReprint +
-                    "," +
+                    ',' +
                     publisher +
-                    "," +
+                    ',' +
                     category;
                 const uniqueBook = await UniqueBook.find({
                     deletedAt: undefined,
@@ -55,15 +55,15 @@ module.exports = {
                     } = dt;
                     const strB =
                         name +
-                        "," +
+                        ',' +
                         description +
-                        "," +
+                        ',' +
                         year +
-                        "," +
+                        ',' +
                         numberOfReprint +
-                        "," +
+                        ',' +
                         publisher +
-                        "," +
+                        ',' +
                         category;
                     const percent = compare(
                         stringToObjectSequence(changeAlias(strA)),
@@ -87,7 +87,7 @@ module.exports = {
                     deletedAt: undefined,
                 });
                 if (!uniqueBookExisted) {
-                    return new ApolloError("Unique book not found", 404);
+                    return new ApolloError('Unique book not found', 404);
                 }
                 return uniqueBookExisted;
             } catch (e) {
@@ -106,20 +106,20 @@ module.exports = {
         createUniqueBook: async (parent, { dataCreate }, { req }) => {
             try {
                 if (!(await checkPermission(req, [ROLE.ADMIN]))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 const uniqueBookExisted = await UniqueBook.findOne({
                     name: dataCreate.name,
                 });
                 if (uniqueBookExisted) {
-                    return new ApolloError("Unique book already existed", 400);
+                    return new ApolloError('Unique book already existed', 400);
                 }
-                dataCreate.unsignedName = toUnsigned(dataCreate.name)
+                dataCreate.unsignedName = toUnsigned(dataCreate.name);
                 const newUniqueBook = new UniqueBook({
                     ...dataCreate,
                 });
                 await newUniqueBook.save();
-                return { message: "Create unique book success" };
+                return { message: 'Create unique book success' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -127,18 +127,18 @@ module.exports = {
         updateUniqueBook: async (parent, { dataUpdate, id }, { req }) => {
             try {
                 if (!(await checkPermission(req, [ROLE.ADMIN]))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 const uniqueBookExisted = await UniqueBook.findById(id);
                 if (!uniqueBookExisted) {
                     return new AuthenticationError(
-                        "Unique book not found",
+                        'Unique book not found',
                         404
                     );
                 }
 
-                if(dataUpdate.name) {
-                    dataUpdate.unsignedName = toUnsigned(dataUpdate.name)
+                if (dataUpdate.name) {
+                    dataUpdate.unsignedName = toUnsigned(dataUpdate.name);
                 }
                 for (let key in dataUpdate) {
                     if (Array.isArray(dataUpdate[key])) {
@@ -151,7 +151,7 @@ module.exports = {
                 }
 
                 await UniqueBook.updateOne({ _id: id }, dataUpdate);
-                return { message: "Update category success!" };
+                return { message: 'Update category success!' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -159,14 +159,14 @@ module.exports = {
         deleteUniqueBook: async (parent, { id }, { req }) => {
             try {
                 if (!(await checkPermission(req, [ROLE.ADMIN]))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 const uniqueBookExisted = await UniqueBook.findById(id);
                 if (!uniqueBookExisted) {
-                    return new AuthenticationError("UniqueBook not found", 404);
+                    return new AuthenticationError('UniqueBook not found', 404);
                 }
                 await UniqueBook.deleteOne({ _id: id });
-                return { message: "Delete unique book success!" };
+                return { message: 'Delete unique book success!' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

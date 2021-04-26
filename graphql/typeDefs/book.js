@@ -36,6 +36,7 @@ module.exports = gql`
         amount: Float!
         price: Float!
         sold: Float!
+        author: String!
         comment: [CommentBook]
         createdAt: DateTime!
         updatedAt: DateTime!
@@ -52,6 +53,7 @@ module.exports = gql`
         publisher: String
         category: ID
         description: String
+        author: String
     }
     input BookUpdate {
         amount: Float
@@ -62,6 +64,7 @@ module.exports = gql`
         numberOfReprint: Int
         publisher: String
         category: ID
+        author: String
         description: String
     }
 `;

@@ -230,6 +230,7 @@ module.exports = {
                     dataNewBook.category = dataBook.category;
                     dataNewBook.description = dataBook.description;
                     dataNewBook.unsignedName = toUnsigned(dataBook.name);
+                    dataNewBook.author = dataBook.author;
                 }
                 const newBook = new Book({
                     ...dataNewBook,

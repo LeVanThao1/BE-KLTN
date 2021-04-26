@@ -1,4 +1,4 @@
-const { gql } = require("apollo-server-express");
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
     scalar DateTime
@@ -19,6 +19,7 @@ module.exports = gql`
         year: String!
         numberOfReprint: Int!
         publisher: String!
+        author: String!
         category: Category!
         description: String!
         createdAt: DateTime!
@@ -33,6 +34,7 @@ module.exports = gql`
         numberOfReprint: Int!
         publisher: String!
         category: ID!
+        author: String!
         description: String!
     }
     input UniqueBookUpdate {
@@ -42,6 +44,7 @@ module.exports = gql`
         numberOfReprint: Int
         publisher: String
         category: ID
+        author: String
         description: String
     }
 `;

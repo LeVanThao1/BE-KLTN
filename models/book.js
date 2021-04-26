@@ -5,7 +5,7 @@ const Book = mongoose.Schema(
         book: {
             type: mongoose.Types.ObjectId,
             ref: 'uniqueBook',
-            default: null
+            default: null,
         },
         store: {
             type: mongoose.Types.ObjectId,
@@ -16,6 +16,9 @@ const Book = mongoose.Schema(
             type: Number,
             min: 0,
             required: [true, 'please enter amount'],
+        },
+        author: {
+            type: String,
         },
         price: {
             type: Number,
@@ -32,11 +35,11 @@ const Book = mongoose.Schema(
         },
         name: {
             type: String,
-            default: null
+            default: null,
         },
         unsignedName: {
             type: String,
-            default: null
+            default: null,
         },
         images: [
             {
@@ -45,25 +48,25 @@ const Book = mongoose.Schema(
         ],
         year: {
             type: String,
-            default: null
+            default: null,
         },
         numberOfReprint: {
             type: Number,
             min: 0,
-            default: null
+            default: null,
         },
         publisher: {
             type: String,
-            default: null
+            default: null,
         },
         category: {
             type: mongoose.Types.ObjectId,
             ref: 'category',
-            default: null
+            default: null,
         },
         description: {
             type: String,
-            default: null
+            default: null,
         },
     },
     {

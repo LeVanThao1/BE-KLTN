@@ -1,34 +1,34 @@
-const express = require("express");
+const express = require('express');
 const {
     ApolloServer,
     graphiqlExpress,
     graphqlExpress,
     graphqlConnect,
-} = require("apollo-server-express");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-require("dotenv").config();
-const cors = require("cors");
+} = require('apollo-server-express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+require('dotenv').config();
+const cors = require('cors');
 const app = express();
-const { execute, subscribe } = require("graphql");
-const consola = require("consola");
-const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
-const { loadFilesSync } = require("@graphql-tools/load-files");
-const path = require("path");
-const { pubsub } = require("./graphql/configs/index");
-const http = require("http");
-const { SubscriptionServer } = require("subscriptions-transport-ws");
-app.use("*", cors({ origin: "http://127.0.0.1:8081" }));
+const { execute, subscribe } = require('graphql');
+const consola = require('consola');
+const { mergeTypeDefs, mergeResolvers } = require('@graphql-tools/merge');
+const { loadFilesSync } = require('@graphql-tools/load-files');
+const path = require('path');
+const { pubsub } = require('./graphql/configs/index');
+const http = require('http');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
+app.use('*', cors({ origin: 'http://127.0.0.1:8081' }));
 
 // app.use("/graphql", bodyParser.json(), graphqlExpress({ schema }));
 // const {typeDefs, resolvers} = require("./graphql");
 //types query/mutation/subscription
 const typeDefs = mergeTypeDefs(
-    loadFilesSync(path.join(__dirname, "./graphql/typeDefs"))
+    loadFilesSync(path.join(__dirname, './graphql/typeDefs'))
 );
 //resolvers
 const resolvers = mergeResolvers(
-    loadFilesSync(path.join(__dirname, "./graphql/resolvers"))
+    loadFilesSync(path.join(__dirname, './graphql/resolvers'))
 );
 
 // app.use(function (req, res, next) {
@@ -56,14 +56,14 @@ const server = new ApolloServer({
     resolvers,
     context: ({ req, res, connection }) => ({ req, res, connection }),
     uploads: {
-        maxFileSize: 300000,
-        maxFiles: 4,
+        maxFileSize: 300000000,
+        maxFiles: 10,
         // maxFieldSize: 2000000,
     },
     subscriptions: {
-        path: "/subscriptions",
-        onConnect: () => console.log("Connected to websocket"),
-        onDisconnect: () => console.log("Disconected to websocket"),
+        path: '/subscriptions',
+        onConnect: () => console.log('Connected to websocket'),
+        onDisconnect: () => console.log('Disconected to websocket'),
     },
     tracing: true,
 });
@@ -78,7 +78,7 @@ const PORT = process.env.PORT || 3000;
 
 mongoose
     .connect(
-        "mongodb+srv://thaolv210402:ta210402@cluster0.2o95l.mongodb.net/express-graphql?retryWrites=true&w=majority",
+        'mongodb+srv://thaolv210402:ta210402@cluster0.2o95l.mongodb.net/express-graphql?retryWrites=true&w=majority',
         {
             useNewUrlParser: true,
             useUnifiedTopology: true,

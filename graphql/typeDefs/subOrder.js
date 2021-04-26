@@ -1,4 +1,4 @@
-const { gql } = require("apollo-server-express");
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
     scalar DateTime
@@ -10,6 +10,16 @@ module.exports = gql`
         updateStatusSubOrder(dataStatus: STATUS!, id: ID!): Result!
         cancleOrderByUser(id: ID!): Result!
     }
+    enum TYPEPAYMENT {
+        ONLINE
+        AFTERRECEIVED
+    }
+
+    enum STATUSPAYMENT {
+        UNPAID
+        PAID
+    }
+
     type SubOrder {
         id: ID!
         user: User!
@@ -17,6 +27,10 @@ module.exports = gql`
         address: String!
         phone: String!
         status: STATUS!
+        note: String
+        statusPayment: STATUSPAYMENT!
+        dateOfPayment: DateTime
+        typePayment: TYPEPAYMENT!
         receivedDate: DateTime
         deliveryDate: DateTime
         createdAt: DateTime!

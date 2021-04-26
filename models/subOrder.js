@@ -1,42 +1,59 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const SubOrder = mongoose.Schema(
     {
         user: {
             type: mongoose.Types.ObjectId,
-            required: [true, "please enter user"],
-            ref: "user",
+            required: [true, 'please enter user'],
+            ref: 'user',
         },
         detail: {
             book: {
                 type: mongoose.Types.ObjectId,
-                required: [true, "please enter book"],
-                ref: "book",
+                required: [true, 'please enter book'],
+                ref: 'book',
             },
             amount: {
                 type: Number,
-                required: [true, "please enter amount"],
+                required: [true, 'please enter amount'],
             },
             price: {
                 type: Number,
-                required: [true, "please enter price"],
+                required: [true, 'please enter price'],
             },
+        },
+        typePayment: {
+            type: String,
+            enum: ['ONLINE', 'AFTERRECEIVED'],
+            default: 'AFTERRECEIVED',
+        },
+        statusPayment: {
+            type: String,
+            enum: ['UNPAID', 'PAID'],
+            default: 'UNPAID',
+        },
+        note: {
+            type: String,
+            default: '',
+        },
+        dateOfPayment: {
+            type: Date,
         },
         address: {
             type: String,
             min: 10,
             max: 100,
-            required: [true, "please enter address"],
+            required: [true, 'please enter address'],
         },
         phone: {
             type: String,
             len: 10,
-            required: [true, "please enter phone"],
+            required: [true, 'please enter phone'],
         },
         status: {
             type: String,
-            enum: ["CANCLE", "WAITING", "CONFIRMED", "PROCESSING", "DONE"],
-            default: "WAITING",
+            enum: ['CANCLE', 'WAITING', 'CONFIRMED', 'PROCESSING', 'DONE'],
+            default: 'WAITING',
         },
         receivedDate: {
             type: Date,
@@ -53,4 +70,4 @@ const SubOrder = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("subOrder", SubOrder);
+module.exports = mongoose.model('subOrder', SubOrder);

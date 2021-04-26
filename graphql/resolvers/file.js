@@ -15,28 +15,33 @@ module.exports = {
     Mutation: {
         uploadSingleFile: async (parent, args, context, info) => {
             try {
-                // console.log(await args.file);
                 const file = await uploadFile(args.file);
-                // const photo = new Photo({
-                //     name: args.file.filename,
-                //     asset_id: file.asset_id,
-                //     public_id: file.public_id,
-                //     url: file.secure_url,
-                // });
-                // await photo.save();
-                return file.secure_url;
+                // console.log(file);
+                const photo = new Photo({
+                    name: file.asset_id,
+                    asset_id: file.asset_id,
+                    public_id: file.public_id,
+                    url: file.secure_url,
+                });
+                await photo.save();
+                return photo;
+                // return file.secure_url;
                 // return await Photo.create({
-                //     name: args.file.filename,
+                //     name: file.public_id,
                 //     asset_id: file.asset_id,
                 //     public_id: file.public_id,
                 //     url: file.secure_url,
                 // });
+                // return file.secure_url;
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
         },
         uploadMultiFile: async (parent, args, context, info) => {
             try {
+                if (args.files.length > 10) {
+                    return new ApolloError('Maxfiles only 10', 500);
+                }
                 const files = await Promise.all(args.files);
                 const file_urls = files.map(async (file) => {
                     const result = await uploadFile(file, 'book');

@@ -1,4 +1,4 @@
-const { gql } = require("apollo-server-express");
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
     scalar DateTime
@@ -25,6 +25,8 @@ module.exports = gql`
         address: String!
         total: Float!
         phone: String!
+        note: String
+        statusPayment: STATUSPAYMENT!
         createdAt: DateTime!
         updatedAt: DateTime!
         deletedAt: DateTime
@@ -33,6 +35,8 @@ module.exports = gql`
         name: String!
         address: String!
         phone: String!
+        note: String
         subOrder: [DetailUpdate!]!
+        typePayment: TYPEPAYMENT!
     }
 `;

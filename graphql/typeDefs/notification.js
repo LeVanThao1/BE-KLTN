@@ -1,4 +1,4 @@
-const { gql } = require("apollo-server-express");
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
     scalar DateTime
@@ -28,6 +28,7 @@ module.exports = gql`
         numberOfReprint: Int!
         publisher: String!
         category: ID!
+        author: String
         description: String!
     }
     enum STATUSBOOKADMIN {

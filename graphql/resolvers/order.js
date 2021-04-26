@@ -5,12 +5,13 @@ const {
     SubOrder,
     Book,
     NotificationOrder,
-} = require("../../models");
-const { ApolloError, AuthenticationError } = require("apollo-server-express");
-const { ROLE } = require("../../constants");
-const { checkPermission, checkSignedIn } = require("../../helper/auth");
-const { pubsub, TypeSub, TypeNotification } = require("../configs");
-const { withFilter } = require("graphql-subscriptions");
+} = require('../../models');
+const { ApolloError, AuthenticationError } = require('apollo-server-express');
+const { ROLE } = require('../../constants');
+const { checkPermission, checkSignedIn } = require('../../helper/auth');
+const { pubsub, TypeSub, TypeNotification } = require('../configs');
+const { withFilter } = require('graphql-subscriptions');
+const user = require('../../models/user');
 module.exports = {
     Order: {
         subOrder: async (parent, { id }, { req }, info) => {
@@ -23,7 +24,7 @@ module.exports = {
         user: async (parent, { id }, { req }, info) => {
             try {
                 return await User.findById(parent.user).select(
-                    "-password -role"
+                    '-password -role'
                 );
             } catch (e) {
                 return new ApolloError(e.message, 500);
@@ -34,7 +35,7 @@ module.exports = {
         orderOfUser: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("You have not permission");
+                    return new AuthenticationError('You have not permission');
                 }
                 const orderExisted = await Order.findOne({
                     _id: id,
@@ -42,7 +43,7 @@ module.exports = {
                     deletedAt: undefined,
                 });
                 if (!orderExisted) {
-                    return new ApolloError("Order not found", 404);
+                    return new ApolloError('Order not found', 404);
                 }
                 return orderExisted;
             } catch (e) {
@@ -54,12 +55,12 @@ module.exports = {
         createOrder: async (parent, { dataOrder }, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("You have not permission");
+                    return new AuthenticationError('You have not permission');
                 }
                 const getProducts = await checkOrder(dataOrder.subOrder);
                 if (getProducts.length <= 0) {
                     return new ApolloError(
-                        "The number of ordered book is greater than the quantity of the stock"
+                        'The number of ordered book is greater than the quantity of the stock'
                     );
                 }
                 await decreaseAmount(dataOrder.subOrder);
@@ -79,17 +80,27 @@ module.exports = {
                                 detail: dataOrder.subOrder[i],
                                 address: dataOrder.address,
                                 phone: dataOrder.phone,
-                                name: dataOrder.name
+                                name: dataOrder.name,
+                                typePayment: dataOrder.typePayment,
+                                note: dataOrder.note ? dataOrder.note : '',
+                                dateOfPayment:
+                                    dataOrder.typePayment === 'ONLINE'
+                                        ? new Date()
+                                        : null,
+                                statusPayment:
+                                    dataOrder.typePayment === 'ONLINE'
+                                        ? 'PAID'
+                                        : 'UNPAID',
                             });
                             await newSubOrder.save();
                             const newNotification = new NotificationOrder({
                                 title:
-                                    "You have an order awaiting confirmation",
+                                    'You have an order awaiting confirmation',
                                 order: newSubOrder,
                                 to: getProducts[i].store.owner,
                                 seen: false,
                                 description:
-                                    "You have an order awaiting confirmation",
+                                    'You have an order awaiting confirmation',
                             });
                             await newNotification.save();
                             pubsub.publish(TypeSub.NOTIFICATION, {
@@ -110,7 +121,9 @@ module.exports = {
                     total,
                 });
                 await newOrder.save();
-                return { message: "Create order success" };
+                req.user.cart = [];
+                await req.user.save();
+                return { message: 'Create order success' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -123,7 +136,7 @@ module.exports = {
                 () => pubsub.asyncIterator(TypeSub.NOTIFICATION),
                 (payload, variables) => {
                     return (
-                        payload.content.to._id + "" === variables.userId + ""
+                        payload.content.to._id + '' === variables.userId + ''
                     );
                 }
             ),
@@ -143,17 +156,19 @@ const checkOrder = async (subOrder) => {
                 _id: 1,
             })
             .populate({
-                select: "owner",
-                path: "store",
+                select: 'owner',
+                path: 'store',
                 populate: {
-                    select: "-password",
-                    path: "owner",
+                    select: '-password',
+                    path: 'owner',
                 },
             });
         for (let i = 0; i < products.length; i++) {
-            const find = products.find((el) => el.book +"" === getProducts[i]._id + "")
-            if(!find) {
-                return []
+            const find = products.find(
+                (el) => el.book + '' === getProducts[i]._id + ''
+            );
+            if (!find) {
+                return [];
             }
             if (find.price !== getProducts[i].price) {
                 return [];
