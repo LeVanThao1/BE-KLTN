@@ -17,3 +17,6 @@ mutation uploadMultiFile($files:[Upload!]!) {
     public_id
   }
 }
+
+
+curl 'http://localhost:3000/graphql' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: http://localhost:3000' -H 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNzg0ZjhlMWUzOTI3MjhlYzNkMDVhMCIsImlhdCI6MTYxOTI2NDUxNCwiZXhwIjoxNjE5MzUwOTE0fQ.sF_dKrnrhZEQeX8p4e9TuXeROO2P1lS30hQvlJfdblE' --data-binary '{"query":"mutation uploadSingleFile($file:Upload!) {\n  uploadSingleFile(file: $file){\n    id\n    url\n    name\n    asset_id\n    public_id\n  }\n}"}' --compressed
