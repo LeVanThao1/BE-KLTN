@@ -112,20 +112,42 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        bookByName: async (parent, { name }, { req }, info) => {
+        bookByName: async (
+            parent,
+            { name, category, limit = 20, page = 1 },
+            { req },
+            info
+        ) => {
             try {
                 const unsignedName = toUnsigned(name);
-                const bookExisted = await Book.find({
+                let query = {
                     deletedAt: undefined,
-                }).populate({
-                    path: 'book',
-                });
-                const globalRegex = new RegExp(unsignedName, 'i');
-                return bookExisted.filter((bk) =>
-                    globalRegex.test(
-                        bk.name ? bk.unsignedName : bk.book.unsignedName
-                    )
-                );
+                };
+                const uniqueBook = await UniqueBook.find({
+                    unsignedName: { $regex: unsignedName, $options: 'i' },
+                }).select('_id');
+                const idUnique = uniqueBook.map((t) => t._id);
+                if (category) {
+                    query.category = category;
+                }
+                const bookExisted = await Book.find({
+                    $or: [
+                        {
+                            unsignedName: {
+                                $regex: unsignedName,
+                                $options: 'i',
+                            },
+                        },
+                        { book: { $in: idUnique } },
+                    ],
+                    ...query,
+                })
+                    .populate({
+                        path: 'book',
+                    })
+                    .limit(limit)
+                    .skip((page - 1) * limit);
+                return bookExisted;
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

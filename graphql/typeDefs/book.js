@@ -8,7 +8,7 @@ module.exports = gql`
         bookByAdmin(id: ID!): Book!
         booksByAdmin: [Book!]!
         booksByCategory(id: ID!, limit: Int, page: Int): [Book!]!
-        bookByName(name: String!): [Book!]!
+        bookByName(name: String!, category: ID, limit: Int, page: Int): [Book!]!
         bookByInterest(name: String!): [Book!]!
         bookSell: [Book!]!
     }
