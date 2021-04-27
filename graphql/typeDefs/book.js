@@ -4,10 +4,10 @@ module.exports = gql`
     scalar DateTime
     type Query {
         book(id: ID!, store: ID): Book!
-        books(store: ID): [Book!]!
+        books(store: ID, limit: Int, page: Int): [Book!]!
         bookByAdmin(id: ID!): Book!
         booksByAdmin: [Book!]!
-        booksByCategory(id: ID!): [Book!]!
+        booksByCategory(id: ID!, limit: Int, page: Int): [Book!]!
         bookByName(name: String!): [Book!]!
         bookByInterest(name: String!): [Book!]!
         bookSell: [Book!]!

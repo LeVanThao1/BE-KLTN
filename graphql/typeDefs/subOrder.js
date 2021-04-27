@@ -5,6 +5,8 @@ module.exports = gql`
     type Query {
         subOrderByUser(id: ID!): SubOrder!
         subOrdersByUser: [SubOrder!]!
+        subOrdersByStore: [SubOrder!]!
+        subOrderByStore(id: ID!): SubOrder
     }
     type Mutation {
         updateStatusSubOrder(dataStatus: STATUS!, id: ID!): Result!
@@ -28,6 +30,7 @@ module.exports = gql`
         phone: String!
         status: STATUS!
         note: String
+        store: Store!
         statusPayment: STATUSPAYMENT!
         dateOfPayment: DateTime
         typePayment: TYPEPAYMENT!

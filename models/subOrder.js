@@ -22,6 +22,11 @@ const SubOrder = mongoose.Schema(
                 required: [true, 'please enter price'],
             },
         },
+        store: {
+            type: mongoose.Types.ObjectId,
+            required: [true, 'please enter store'],
+            ref: 'stroe',
+        },
         typePayment: {
             type: String,
             enum: ['ONLINE', 'AFTERRECEIVED'],

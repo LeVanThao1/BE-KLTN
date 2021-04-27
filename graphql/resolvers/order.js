@@ -81,6 +81,7 @@ module.exports = {
                                 address: dataOrder.address,
                                 phone: dataOrder.phone,
                                 name: dataOrder.name,
+                                store: getProducts[i].store.owner,
                                 typePayment: dataOrder.typePayment,
                                 note: dataOrder.note ? dataOrder.note : '',
                                 dateOfPayment:

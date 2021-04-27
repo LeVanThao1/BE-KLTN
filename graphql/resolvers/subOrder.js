@@ -6,23 +6,30 @@ const {
     Book,
     Store,
     NotificationOrder,
-} = require("../../models");
-const { ApolloError, AuthenticationError } = require("apollo-server-express");
-const { ROLE } = require("../../constants");
-const { checkPermission, checkSignedIn } = require("../../helper/auth");
+} = require('../../models');
+const { ApolloError, AuthenticationError } = require('apollo-server-express');
+const { ROLE } = require('../../constants');
+const { checkPermission, checkSignedIn } = require('../../helper/auth');
 const {
     pubsub,
     TypeNotification,
     getTitleNotificationOrder,
     TypeSub,
-} = require("../configs");
+} = require('../configs');
 module.exports = {
     SubOrder: {
         user: async (parent, { id }, { req }, info) => {
             try {
                 return await User.findById(parent.user).select(
-                    "-password -role"
+                    '-password -role'
                 );
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        store: async (parent, { id }, { req }, info) => {
+            try {
+                return await Store.findOne({ _id: parent.store });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -32,7 +39,7 @@ module.exports = {
         subOrderByUser: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("You have not permission");
+                    return new AuthenticationError('You have not permission');
                 }
                 const subOrderExisted = await SubOrder.findOne({
                     _id: id,
@@ -40,7 +47,7 @@ module.exports = {
                     deletedAt: undefined,
                 });
                 if (!subOrderExisted) {
-                    return new ApolloError("Order not found", 404);
+                    return new ApolloError('Order not found', 404);
                 }
                 return subOrderExisted;
             } catch (e) {
@@ -50,10 +57,53 @@ module.exports = {
         subOrdersByUser: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("You have not permission");
+                    return new AuthenticationError('You have not permission');
                 }
                 return await SubOrder.find({
                     user: req.user._id,
+                    deletedAt: undefined,
+                });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        subOrdersByStore: async (parent, { id }, { req }, info) => {
+            try {
+                if (!(await checkPermission(req, [ROLE.STORE]))) {
+                    return new AuthenticationError('User have not permission');
+                }
+                const store = await Store.findOne({
+                    owner: req.user._id,
+                }).select('_id');
+
+                if (!store) {
+                    return new ApolloError('Store not found', 404);
+                }
+
+                return await SubOrder.find({
+                    store: store._id,
+                    deletedAt: undefined,
+                });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        subOrderByStore: async (parent, { id }, { req }, info) => {
+            try {
+                if (!(await checkPermission(req, [ROLE.STORE]))) {
+                    return new AuthenticationError('User have not permission');
+                }
+                const store = await Store.findOne({
+                    owner: req.user._id,
+                }).select('_id');
+
+                if (!store) {
+                    return new ApolloError('Store not found', 404);
+                }
+
+                return await SubOrder.findOne({
+                    _id: id,
+                    store: store._id,
                     deletedAt: undefined,
                 });
             } catch (e) {
@@ -70,40 +120,40 @@ module.exports = {
         ) => {
             try {
                 if (!(await checkPermission(req, [ROLE.STORE]))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 const subOrderExisted = await SubOrder.findOne({
                     _id: id,
                     deletedAt: undefined,
                 })
                     .populate({
-                        path: "detail.book",
+                        path: 'detail.book',
                     })
                     .populate({
-                        select: "-password -role",
-                        path: "user",
+                        select: '-password -role',
+                        path: 'user',
                     });
 
                 if (!subOrderExisted) {
-                    return new ApolloError("Order not found", 404);
+                    return new ApolloError('Order not found', 404);
                 }
-                if (subOrderExisted.status === "CANCLE") {
+                if (subOrderExisted.status === 'CANCLE') {
                     return new ApolloError(
-                        "The order was canceled before ",
+                        'The order was canceled before ',
                         400
                     );
                 }
                 const findStore = await Store.findOne({ owner: req.user._id });
                 if (
-                    subOrderExisted.detail.book.store + "" !==
-                    findStore._id + ""
+                    subOrderExisted.detail.book.store + '' !==
+                    findStore._id + ''
                 ) {
                     return new ApolloError(
-                        "You are not store of this order",
+                        'You are not store of this order',
                         400
                     );
                 }
-                if (dataStatus === "CANCLE") {
+                if (dataStatus === 'CANCLE') {
                     await increaseAmount(subOrderExisted.detail);
                 }
                 subOrderExisted.status = dataStatus;
@@ -119,7 +169,7 @@ module.exports = {
                     content: newNotificationOrder,
                 });
                 subOrderExisted.save();
-                return { message: "Update status success" };
+                return { message: 'Update status success' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -127,55 +177,55 @@ module.exports = {
         cancleOrderByUser: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("You have not permission");
+                    return new AuthenticationError('You have not permission');
                 }
                 const subOrderExisted = await SubOrder.findOne({
                     _id: id,
                     user: req.user._id,
                 }).populate({
-                    path: "detail.book",
+                    path: 'detail.book',
                     populate: {
-                        select: "-avatar",
-                        path: "store book",
+                        select: '-avatar',
+                        path: 'store book',
                         populate: {
-                            select: "-password -role",
-                            path: "owner",
+                            select: '-password -role',
+                            path: 'owner',
                         },
                     },
                 });
                 if (!subOrderExisted) {
-                    return new ApolloError("Order not found", 404);
+                    return new ApolloError('Order not found', 404);
                 }
-                if (subOrderExisted.status === "CANCLE") {
+                if (subOrderExisted.status === 'CANCLE') {
                     return new ApolloError(
-                        "The order was canceled before ",
+                        'The order was canceled before ',
                         400
                     );
                 }
                 if (
-                    subOrderExisted.status !== "WAITING" &&
-                    subOrderExisted.status !== "CANCLE"
+                    subOrderExisted.status !== 'WAITING' &&
+                    subOrderExisted.status !== 'CANCLE'
                 ) {
                     return new ApolloError(
-                        "Your order has been confirmed, please contact the store to cancel the order",
+                        'Your order has been confirmed, please contact the store to cancel the order',
                         400
                     );
                 }
                 await increaseAmount([subOrderExisted.detail]);
-                subOrderExisted.status = "CANCLE";
+                subOrderExisted.status = 'CANCLE';
                 const newNotificationOrder = new NotificationOrder({
-                    title: getTitleNotificationOrder("CANCLE"),
+                    title: getTitleNotificationOrder('CANCLE'),
                     order: subOrderExisted,
                     to: subOrderExisted.detail.book.store.owner,
                     seen: false,
-                    description: getTitleNotificationOrder("CANCLE"),
+                    description: getTitleNotificationOrder('CANCLE'),
                 });
                 await newNotificationOrder.save();
                 pubsub.publish(TypeSub.NOTIFICATION, {
                     content: newNotificationOrder,
                 });
                 subOrderExisted.save();
-                return { message: "Cancle status success" };
+                return { message: 'Cancle status success' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

@@ -64,7 +64,12 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        books: async (parent, { store }, { req }, info) => {
+        books: async (
+            parent,
+            { store, limit = 20, page = 1 },
+            { req },
+            info
+        ) => {
             try {
                 let query = {
                     deletedAt: undefined,
@@ -72,15 +77,19 @@ module.exports = {
                 if (store) {
                     query.store = store;
                 }
-                return await Book.find(query);
-                return a;
+                return await Book.find(query)
+                    .limit(limit)
+                    .skip((page - 1) * limit);
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
         },
         bookSell: async (parent, {}, { req }, info) => {
             try {
-                return await Book.find({ sold: { $gt: 0 } })
+                return await Book.find({
+                    sold: { $gt: 0 },
+                    deletedAt: undefined,
+                })
                     .sort({
                         sold: -1,
                     })
@@ -106,7 +115,9 @@ module.exports = {
         bookByName: async (parent, { name }, { req }, info) => {
             try {
                 const unsignedName = toUnsigned(name);
-                const bookExisted = await Book.find().populate({
+                const bookExisted = await Book.find({
+                    deletedAt: undefined,
+                }).populate({
                     path: 'book',
                 });
                 const globalRegex = new RegExp(unsignedName, 'i');
@@ -126,6 +137,7 @@ module.exports = {
                 }
                 const uniqueBook = await UniqueBook.find({
                     category: { $in: req.user.interests },
+                    deletedAt: undefined,
                 });
                 const idUnique = uniqueBook.map((dt) => dt._id);
                 return await Book.find({
@@ -148,7 +160,12 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        booksByCategory: async (parent, { id }, { req }, info) => {
+        booksByCategory: async (
+            parent,
+            { id, limit = 20, page = 1 },
+            { req },
+            info
+        ) => {
             try {
                 const uniqueBook = await UniqueBook.find({ category: id });
                 const idUnique = uniqueBook.map((dt) => dt._id);
@@ -157,7 +174,10 @@ module.exports = {
                         { book: { $in: idUnique } },
                         { category: { $in: id } },
                     ],
-                });
+                    deletedAt: undefined,
+                })
+                    .limit(limit)
+                    .skip((page - 1) * limit);
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
