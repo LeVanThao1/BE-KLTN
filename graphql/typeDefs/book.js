@@ -36,7 +36,7 @@ module.exports = gql`
         amount: Float!
         price: Float!
         sold: Float!
-        author: String!
+        author: String
         comment: [CommentBook]
         createdAt: DateTime!
         updatedAt: DateTime!

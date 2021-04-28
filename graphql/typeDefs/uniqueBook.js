@@ -6,6 +6,7 @@ module.exports = gql`
         uniqueBook(id: ID!): UniqueBook!
         uniqueBooks: [UniqueBook!]!
         getRecomment(dataUniqueBook: UniqueBookCreate!): [UniqueBook!]!
+        getRecommentByName(name: String!): [UniqueBook!]!
     }
     type Mutation {
         createUniqueBook(dataCreate: UniqueBookCreate!): Result!
