@@ -15,15 +15,15 @@ module.exports = gql`
         verifiedStore(id: ID!): Result!
     }
     type Store {
-        id: ID!
-        name: String!
-        description: String!
-        owner: User!
-        background: String!
-        avatar: String!
+        id: ID
+        name: String
+        description: String
+        owner: User
+        background: String
+        avatar: String
         books: [Book!]
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
 

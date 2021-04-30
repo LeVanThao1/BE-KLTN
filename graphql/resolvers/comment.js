@@ -80,11 +80,11 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        commentsOfBook: async (parent, { bookId }, { req }, info) => {
+        commentsOfBook: async (parent, { bookId, limit, page }, { req }, info) => {
             try {
                 const commentsExisted = await CommentBook.find({
                     book: bookId,
-                });
+                }).sort({createdAt: -1}).limit(limit).skip((page - 1) * limit);
 
                 if (!commentsExisted) {
                     return new ApolloError("Comment of book not found", 404);
@@ -119,11 +119,11 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        commentsOfPost: async (parent, { postId }, { req }, info) => {
+        commentsOfPost: async (parent, { postId, limit, page }, { req }, info) => {
             try {
                 const commentsExisted = await CommentPost.find({
                     post: postId,
-                });
+                }).sort({createdAt: -1}).limit(limit).skip((page - 1) * limit);
 
                 if (!commentsExisted) {
                     return new ApolloError("Comment of post not found", 404);

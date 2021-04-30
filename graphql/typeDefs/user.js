@@ -70,9 +70,9 @@ module.exports = gql`
         OTHER
     }
     type User {
-        id: ID!
+        id: ID
         email: String
-        name: String!
+        name: String
         avatar: String
         dateOfBirth: DateTime
         gender: GENDER
@@ -85,8 +85,8 @@ module.exports = gql`
         expired: DateTime
         notifications: Notifications
         interests: [Category]
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        createdAt: DateTime
+        updatedAt: DateTime
         cart: [Detail!]
         likes: [Book]
         isOnline: Boolean

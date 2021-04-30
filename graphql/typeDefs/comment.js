@@ -7,7 +7,7 @@ module.exports = gql`
         commentsOfBook(bookId: ID!): [CommentBook!]!
         commentsBookByAdmin: [CommentBook!]!
         commentOfPost(id: ID!): CommentPost!
-        commentsOfPost(postId: ID!): [CommentPost!]!
+        commentsOfPost(postId: ID!, limit: Int, page: Int): [CommentPost!]!
         commentsPostByAdmin: [CommentPost!]!
     }
     type Mutation {
@@ -32,14 +32,14 @@ module.exports = gql`
         deletedAt: DateTime
     }
     type CommentBook {
-        id: ID!
-        content: String!
-        book: Book!
-        author: User!
-        type: TYPE!
+        id: ID
+        content: String
+        book: Book
+        author: User
+        type: TYPE
         reply: [CommentBook]
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     input dataComment {

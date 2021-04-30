@@ -23,21 +23,21 @@ module.exports = gql`
     }
 
     type SubOrder {
-        id: ID!
-        user: User!
-        detail: Detail!
-        address: String!
-        phone: String!
-        status: STATUS!
+        id: ID
+        user: User
+        detail: Detail
+        address: String
+        phone: String
+        status: STATUS
         note: String
-        store: Store!
-        statusPayment: STATUSPAYMENT!
+        store: Store
+        statusPayment: STATUSPAYMENT
         dateOfPayment: DateTime
-        typePayment: TYPEPAYMENT!
+        typePayment: TYPEPAYMENT
         receivedDate: DateTime
         deliveryDate: DateTime
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     enum STATUS {

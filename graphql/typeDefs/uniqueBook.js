@@ -14,17 +14,17 @@ module.exports = gql`
         deleteUniqueBook(id: ID!): Result!
     }
     type UniqueBook {
-        id: ID!
-        name: String!
-        images: [String!]!
-        year: String!
-        numberOfReprint: Int!
-        publisher: String!
-        author: String!
-        category: Category!
-        description: String!
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        id: ID
+        name: String
+        images: [String!]
+        year: String
+        numberOfReprint: Int
+        publisher: String
+        author: String
+        category: Category
+        description: String
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
         percent: Int
     }

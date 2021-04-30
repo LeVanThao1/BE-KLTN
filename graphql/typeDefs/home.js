@@ -7,6 +7,6 @@ module.exports = gql`
     type Home {
         bestSell: [Book!]
         books: [Book!]
-        categories: [Category!]!
+        categories: [Category!]
     }
 `;

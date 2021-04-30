@@ -11,8 +11,8 @@ module.exports = gql`
         deleteGroup(id: ID!): Result!
     }
     type Group {
-        id: ID!
-        members: [User!]!
+        id: ID
+        members: [User!]
         lastMassage: Message
         messages: [Message!]
         userDeleted: [User!]

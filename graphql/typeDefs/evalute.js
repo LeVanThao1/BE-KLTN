@@ -13,13 +13,13 @@ module.exports = gql`
         deleteEvaluteByStore(id: ID!): Result!
     }
     type Evalute {
-        id: ID!
-        content: String!
-        store: Store!
-        start: Int!
-        author: User!
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        id: ID
+        content: String
+        store: Store
+        start: Int
+        author: User
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     input DataEvalute {

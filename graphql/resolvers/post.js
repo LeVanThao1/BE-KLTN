@@ -41,7 +41,7 @@ module.exports = {
         },
         comment: async (parent, { id }, { req }, info) => {
             try {
-                return await CommentPost.find({ post: parent.id });
+                return await CommentPost.find({ post: parent.id }).sort({createdAt: -1}).limit(8);
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

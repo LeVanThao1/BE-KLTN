@@ -18,17 +18,17 @@ module.exports = gql`
         order: SubOrder!
     }
     type Order {
-        id: ID!
-        user: User!
-        subOrder: [SubOrder!]!
-        name: String!
-        address: String!
-        total: Float!
-        phone: String!
+        id: ID
+        user: User
+        subOrder: [SubOrder!]
+        name: String
+        address: String
+        total: Float
+        phone: String
         note: String
-        statusPayment: STATUSPAYMENT!
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        statusPayment: STATUSPAYMENT
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     input OrderCreate {

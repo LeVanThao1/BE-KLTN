@@ -16,21 +16,21 @@ module.exports = gql`
     }
 
     type Post {
-        id: ID!
-        title: String!
+        id: ID
+        title: String
         name: String
         year: String
         numberOfReprint: Int
         publisher: String
         category: Category
-        description: String!
+        description: String
         price: Float
         images: [String!]
-        author: User!
+        author: User
         comment: [CommentPost]
-        bookWanna: [String]!
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        bookWanna: [String]
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
 

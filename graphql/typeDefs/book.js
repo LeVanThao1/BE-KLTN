@@ -23,7 +23,7 @@ module.exports = gql`
         ): Result!
     }
     type Book {
-        id: ID!
+        id: ID
         book: UniqueBook
         name: String
         images: [String!]
@@ -32,14 +32,14 @@ module.exports = gql`
         publisher: String
         category: Category
         description: String
-        store: Store!
-        amount: Float!
-        price: Float!
-        sold: Float!
+        store: Store
+        amount: Float
+        price: Float
+        sold: Float
         author: String
         comment: [CommentBook]
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     input BookCreate {

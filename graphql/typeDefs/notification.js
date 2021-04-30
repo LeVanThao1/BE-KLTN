@@ -36,64 +36,64 @@ module.exports = gql`
         UPDATE
     }
     type NotificationBookAdmin {
-        id: ID!
-        title: String!
-        description: String!
-        data: DataBookAdmin!
+        id: ID
+        title: String
+        description: String
+        data: DataBookAdmin
         seen: Boolean
-        status: STATUSBOOKADMIN!
+        status: STATUSBOOKADMIN
         uniqueBook: ID
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     type NotificationOrder {
-        id: ID!
-        title: String!
-        description: String!
-        to: User!
-        order: SubOrder!
-        seen: Boolean!
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        id: ID
+        title: String
+        description: String
+        to: User
+        order: SubOrder
+        seen: Boolean
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     type NotificationBook {
-        id: ID!
-        title: String!
-        description: String!
-        to: User!
-        commentBook: CommentBook!
+        id: ID
+        title: String
+        description: String
+        to: User
+        commentBook: CommentBook
         seen: Boolean
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     type Post {
-        id: ID!
-        title: String!
-        uniqueBook: UniqueBook!
-        description: String!
+        id: ID
+        title: String
+        uniqueBook: UniqueBook
+        description: String
         images: [String!]
-        author: User!
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        author: User
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     type NotificationPost {
         id: ID!
-        title: String!
-        description: String!
+        title: String
+        description: String
         to: User!
-        commentPost: CommentPost!
+        commentPost: CommentPost
         seen: Boolean
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     type Notifications {
-        order: [NotificationOrder!]!
-        book: [NotificationBook!]!
-        post: [NotificationPost!]!
+        order: [NotificationOrder!]
+        book: [NotificationBook!]
+        post: [NotificationPost!]
     }
 `;

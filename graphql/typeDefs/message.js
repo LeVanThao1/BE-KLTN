@@ -14,16 +14,16 @@ module.exports = gql`
         receiveMessage(userId: ID!): Message!
     }
     type Message {
-        id: ID!
-        content: String!
+        id: ID
+        content: String
         images: [String!]
-        datetime: DateTime!
-        to: Group!
-        from: User!
-        type: TYPE!
-        seen: Boolean!
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        datetime: DateTime
+        to: Group
+        from: User
+        type: TYPE
+        seen: Boolean
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
     input dataCreateMessage {

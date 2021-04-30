@@ -12,10 +12,10 @@ module.exports = gql`
         deleteCategory(id: ID!): Result!
     }
     type Category {
-        id: ID!
-        name: String!
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        id: ID
+        name: String
+        createdAt: DateTime
+        updatedAt: DateTime
         deletedAt: DateTime
     }
 `;
