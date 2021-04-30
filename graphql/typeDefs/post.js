@@ -4,7 +4,7 @@ module.exports = gql`
     scalar DateTime
     type Query {
         post(id: ID!): Post!
-        posts(userId: ID): [Post!]!
+        posts(userId: ID, limit: Int, page: Int): [Post!]!
         postsByAdmin: [Post!]!
         postByAdmin(id: ID!): [Post!]
         searchPost(description: String!): [Post!]!

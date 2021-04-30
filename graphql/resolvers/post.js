@@ -75,7 +75,7 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        posts: async (parent, { userId }, { req }, info) => {
+        posts: async (parent, { userId, limit = 10, page =1 }, { req }, info) => {
             let query = {
                 deletedAt: undefined,
             };
@@ -83,7 +83,7 @@ module.exports = {
                 query.author = userId;
             }
             try {
-                return await Post.find(query);
+                return await Post.find(query).sort({createdAt: -1}).limit(limit).skip((page -1) * limit);
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

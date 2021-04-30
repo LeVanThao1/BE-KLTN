@@ -4,7 +4,7 @@ module.exports = gql`
     scalar DateTime
     type Query {
         commentOfBook(id: ID!): CommentBook!
-        commentsOfBook(bookId: ID!): [CommentBook!]!
+        commentsOfBook(bookId: ID!, limit: Int, page: Int): [CommentBook!]!
         commentsBookByAdmin: [CommentBook!]!
         commentOfPost(id: ID!): CommentPost!
         commentsOfPost(postId: ID!, limit: Int, page: Int): [CommentPost!]!

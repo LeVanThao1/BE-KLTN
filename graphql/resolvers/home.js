@@ -15,12 +15,17 @@ module.exports = {
     Query: {
         home: async (parent, args, { req }, info) => {
             try {
-                const bestSell = await Book.find({ sold: { $gt: 0 } })
+                const bestSell = await Book.find({
+                    sold: { $gt: 0 },
+                    deletedAt: undefined,
+                })
                     .sort({
                         sold: -1,
                     })
                     .limit(20);
-                const books = await Book.find().limit(20);
+                const books = await Book.find({ deletedAt: undefined }).limit(
+                    20
+                );
                 const categories = await Category.find();
                 return { bestSell, books, categories };
             } catch (e) {

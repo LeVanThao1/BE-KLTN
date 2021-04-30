@@ -39,7 +39,9 @@ module.exports = {
         },
         comment: async (parent, { id }, { req }, info) => {
             try {
-                return await CommentBook.find({ book: parent.id }).sort({createdAt: -1}).limit(8);
+                return await CommentBook.find({ book: parent.id })
+                    .sort({ createdAt: -1 })
+                    .limit(8);
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -79,7 +81,8 @@ module.exports = {
                 }
                 return await Book.find(query)
                     .limit(limit)
-                    .skip((page - 1) * limit);
+                    .skip((page - 1) * limit)
+                    .sort({ createdAt: -1 });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

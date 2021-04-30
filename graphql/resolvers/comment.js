@@ -80,7 +80,7 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        commentsOfBook: async (parent, { bookId, limit, page }, { req }, info) => {
+        commentsOfBook: async (parent, { bookId, limit = 8, page = 1 }, { req }, info) => {
             try {
                 const commentsExisted = await CommentBook.find({
                     book: bookId,
@@ -119,7 +119,7 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        commentsOfPost: async (parent, { postId, limit, page }, { req }, info) => {
+        commentsOfPost: async (parent, { postId, limit = 8, page = 1 }, { req }, info) => {
             try {
                 const commentsExisted = await CommentPost.find({
                     post: postId,
