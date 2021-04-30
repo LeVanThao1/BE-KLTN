@@ -1,31 +1,35 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Store = mongoose.Schema(
     {
         name: {
             type: String,
-            required: [true, "please enter title"],
+            required: [true, 'please enter title'],
             unique: true,
+        },
+        address: {
+            type: String,
+            required: [true, 'please enter andress'],
         },
         unsignedName: {
             type: String,
-            default: null
+            default: null,
         },
         avatar: {
             type: String,
-            required: [true, "please enter avatar"],
+            required: [true, 'please enter avatar'],
         },
         background: {
             type: String,
         },
         description: {
             type: String,
-            required: [true, "please enter description"],
+            required: [true, 'please enter description'],
         },
         owner: {
             type: mongoose.Types.ObjectId,
-            required: [true, "please type owner"],
-            ref: "user",
+            required: [true, 'please type owner'],
+            ref: 'user',
         },
         verified: {
             type: Boolean,
@@ -40,4 +44,4 @@ const Store = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("store", Store);
+module.exports = mongoose.model('store', Store);
