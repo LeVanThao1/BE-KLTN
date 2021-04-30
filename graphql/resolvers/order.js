@@ -81,7 +81,7 @@ module.exports = {
                                 address: dataOrder.address,
                                 phone: dataOrder.phone,
                                 name: dataOrder.name,
-                                store: getProducts[i].store.owner,
+                                store: getProducts[i].store._id,
                                 typePayment: dataOrder.typePayment,
                                 note: dataOrder.note ? dataOrder.note : '',
                                 dateOfPayment:
@@ -157,12 +157,8 @@ const checkOrder = async (subOrder) => {
                 _id: 1,
             })
             .populate({
-                select: 'owner',
+                select: '_id',
                 path: 'store',
-                populate: {
-                    select: '-password',
-                    path: 'owner',
-                },
             });
         for (let i = 0; i < products.length; i++) {
             const find = products.find(
