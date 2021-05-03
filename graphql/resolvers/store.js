@@ -2,7 +2,20 @@ const { Store, User, Book } = require('../../models');
 const { ApolloError, AuthenticationError } = require('apollo-server-express');
 const { ROLE } = require('../../constants');
 const { checkPermission, checkSignedIn } = require('../../helper/auth');
-const { toUnsigned } = require('../../helper/common');
+const {
+    toUnsigned,
+    getDistanceFromLatLonInKm,
+} = require('../../helper/common');
+const NodeGeocoder = require('node-geocoder');
+
+const options = {
+    provider: 'google',
+    // Optional depending on the providers
+    apiKey: process.env.API_KEY_MAP, // for Mapquest, OpenCage, Google Premier
+    formatter: null, // 'gpx', 'string', ...
+};
+
+const geocoder = NodeGeocoder(options);
 module.exports = {
     Store: {
         owner: async (parent, { id }, { req }, info) => {
@@ -80,6 +93,35 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
+        locationsStores: async (
+            parent,
+            { distance = 50, lng = 0, lat = 0, limit = 50 },
+            { req },
+            info
+        ) => {
+            try {
+                console.log(lng, lat);
+                const maxDistance = distance / 111.12;
+                let query = {
+                    location: {
+                        $near: [lat, lng],
+                        $maxDistance: maxDistance,
+                    },
+                };
+                const data = await Store.find(query).limit(limit);
+                console.log(data);
+                return data.map((dt) => ({
+                    store: dt,
+                    distance: getDistanceFromLatLonInKm(
+                        ...dt.location,
+                        lat,
+                        lng
+                    ).toFixed(1),
+                }));
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
     },
     Mutation: {
         createStore: async (parent, { dataStore }, { req }) => {
@@ -94,7 +136,12 @@ module.exports = {
                 if (storeExisted) {
                     return new ApolloError('Name store already existed', 400);
                 }
-
+                if (address) {
+                    const [{ latitude, longitude }] = await geocoder.geocode(
+                        '32 Lê Văn Đức, Hoà Cường Nam, Hải Châu, Đà Nẵng'
+                    );
+                    dataStore.location = [latitude, longitude];
+                }
                 const newStore = new Store({
                     ...dataStore,
                     unsignedName: toUnsigned(dataStore.name),

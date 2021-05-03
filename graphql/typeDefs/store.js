@@ -7,6 +7,12 @@ module.exports = gql`
         stores: [Store!]!
         storeByStoreAndAdmin(id: ID!): Store!
         storesByAdmin: [Store!]!
+        locationsStores(
+            distance: Int
+            lng: Float
+            lat: Float
+            limit: Int
+        ): [LocationStore!]
     }
     type Mutation {
         createStore(dataStore: storeCreate!): Result!
@@ -27,7 +33,10 @@ module.exports = gql`
         updatedAt: DateTime
         deletedAt: DateTime
     }
-
+    type LocationStore {
+        store: Store
+        distance: Float
+    }
     input storeCreate {
         name: String!
         description: String!

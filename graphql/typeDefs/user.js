@@ -110,5 +110,6 @@ module.exports = gql`
         book: ID!
         price: Float
         amount: Int!
+        ship: Float
     }
 `;

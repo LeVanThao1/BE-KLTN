@@ -74,13 +74,15 @@ module.exports = {
                                 return resolve(data);
                             total +=
                                 dataOrder.subOrder[i].price *
-                                dataOrder.subOrder[i].amount;
+                                    dataOrder.subOrder[i].amount +
+                                dataOrder.subOrder[i].ship;
                             const newSubOrder = new SubOrder({
                                 user: req.user._id,
                                 detail: dataOrder.subOrder[i],
                                 address: dataOrder.address,
                                 phone: dataOrder.phone,
                                 name: dataOrder.name,
+                                ship: dataOrder.subOrder[i].ship,
                                 store: getProducts[i].store._id,
                                 typePayment: dataOrder.typePayment,
                                 note: dataOrder.note ? dataOrder.note : '',
@@ -98,7 +100,8 @@ module.exports = {
                                 title:
                                     'You have an order awaiting confirmation',
                                 order: newSubOrder,
-                                to: getProducts[i].store.owner,
+                                author: req.user._id,
+                                to: getProducts[i].store.id,
                                 seen: false,
                                 description:
                                     'You have an order awaiting confirmation',

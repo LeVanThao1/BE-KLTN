@@ -31,6 +31,7 @@ module.exports = gql`
         status: STATUS
         note: String
         store: Store
+        ship: Float
         statusPayment: STATUSPAYMENT
         dateOfPayment: DateTime
         typePayment: TYPEPAYMENT

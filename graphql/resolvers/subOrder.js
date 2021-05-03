@@ -143,6 +143,12 @@ module.exports = {
                         400
                     );
                 }
+                if (subOrderExisted.status === dataStatus) {
+                    return new ApolloError(
+                        'Cannot update with current state',
+                        400
+                    );
+                }
                 const findStore = await Store.findOne({ owner: req.user._id });
                 if (
                     subOrderExisted.detail.book.store + '' !==
@@ -168,7 +174,7 @@ module.exports = {
                 pubsub.publish(TypeSub.NOTIFICATION, {
                     content: newNotificationOrder,
                 });
-                subOrderExisted.save();
+                await subOrderExisted.save();
                 return { message: 'Update status success' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
@@ -224,7 +230,7 @@ module.exports = {
                 pubsub.publish(TypeSub.NOTIFICATION, {
                     content: newNotificationOrder,
                 });
-                subOrderExisted.save();
+                await subOrderExisted.save();
                 return { message: 'Cancle status success' };
             } catch (e) {
                 return new ApolloError(e.message, 500);

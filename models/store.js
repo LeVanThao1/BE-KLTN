@@ -31,6 +31,10 @@ const Store = mongoose.Schema(
             required: [true, 'please type owner'],
             ref: 'user',
         },
+        location: {
+            type: [Number], // [<longitude>, <latitude>]
+            index: '2d', // create the geospatial index
+        },
         verified: {
             type: Boolean,
             default: false,

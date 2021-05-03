@@ -53,13 +53,19 @@ module.exports = {
         notifications: async (parent, args, { req }, info) => {
             try {
                 const a = {
-                    order: await NotificationOrder.find({ to: parent.id }),
+                    order: await NotificationOrder.find({ to: parent.id })
+                        .sort({ createdAt: -1 })
+                        .limit(10),
                     book: await NotificationBook.find({
                         to: parent.id,
-                    }),
+                    })
+                        .sort({ createdAt: -1 })
+                        .limit(10),
                     post: await NotificationPost.find({
                         to: parent.id,
-                    }),
+                    })
+                        .sort({ createdAt: -1 })
+                        .limit(10),
                 };
                 return a;
             } catch (e) {
@@ -241,7 +247,10 @@ module.exports = {
                 } else {
                     sendEmail(email, otp);
                 }
-                await User.updateOne(query, { otp: otp, expired: new Date(moment().add(5, 'minutes')) });
+                await User.updateOne(query, {
+                    otp: otp,
+                    expired: new Date(moment().add(5, 'minutes')),
+                });
                 return { message: 'Send otp to phone number or mail' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
@@ -387,7 +396,7 @@ module.exports = {
                 const hashPassword = await bcrypt.hash(password, 12);
                 req.user.password = hashPassword;
                 req.user.expired = null;
-                req.user.otp = null
+                req.user.otp = null;
                 await req.user.save();
                 return { message: 'Reset password success' };
             } catch (e) {

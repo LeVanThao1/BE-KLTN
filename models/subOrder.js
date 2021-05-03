@@ -37,6 +37,11 @@ const SubOrder = mongoose.Schema(
             enum: ['UNPAID', 'PAID'],
             default: 'UNPAID',
         },
+        ship: {
+            type: Number,
+            min: 0,
+            default: 0,
+        },
         note: {
             type: String,
             default: '',
