@@ -154,7 +154,7 @@ module.exports = {
                 }
                 for (let key in dataUpdate) {
                     if (Array.isArray(dataUpdate[key])) {
-                        if (data[key].length === 0) {
+                        if (dataUpdate[key].length === 0) {
                             delete dataUpdate[key];
                         }
                     } else {
