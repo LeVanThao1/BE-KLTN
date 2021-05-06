@@ -80,11 +80,17 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        getRecommentByName: async (parent, { name }, { req }, info) => {
+        getRecommentByName: async (
+            parent,
+            { name, type = 'unsignedName' },
+            { req },
+            info
+        ) => {
             try {
-                const unsignedName = toUnsigned(name);
+                let search = name;
+                if (type === 'unsignedName') search = toUnsigned(name);
                 const uniqueBook = await UniqueBook.find({
-                    unsignedName: { $regex: unsignedName, $options: 'i' },
+                    [type]: { $regex: search, $options: 'i' },
                     deletedAt: undefined,
                 });
                 return uniqueBook;
