@@ -28,6 +28,11 @@ module.exports = gql`
             otp: String!
         ): String!
         userByAdmin(id: ID!): User!
+        profileUserOther(id: ID!): ProfileOther!
+    }
+    type ProfileOther {
+        profile: User
+        post: [Post!]
     }
     type Mutation {
         register(newUser: UserInput!, type: Boolean!): Result!

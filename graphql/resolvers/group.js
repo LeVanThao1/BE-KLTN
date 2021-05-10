@@ -1,7 +1,7 @@
-const { Group, Message, User } = require("../../models");
-const { ApolloError, AuthenticationError } = require("apollo-server-express");
-const { ROLE } = require("../../constants");
-const { checkSignedIn } = require("../../helper/auth");
+const { Group, Message, User } = require('../../models');
+const { ApolloError, AuthenticationError } = require('apollo-server-express');
+const { ROLE } = require('../../constants');
+const { checkSignedIn } = require('../../helper/auth');
 module.exports = {
     Group: {
         lastMassage: async (parent, args, { req }, info) => {
@@ -15,50 +15,31 @@ module.exports = {
         group: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 const groupExisred = await Group.findOne({
                     _id: id,
                     members: { $in: [req.user._id] },
-                })
-                    .populate({
-                        path: "messages",
-                    })
-                    .populate({
-                        select: "-password",
-                        path: "members",
-                    })
-                    .populate({
-                        select: "-password",
-                        path: "userDeleted",
-                    });
+                });
                 if (!groupExisred) {
-                    return new ApolloError("Group not found", 404);
+                    return new ApolloError('Group not found', 404);
                 }
                 return groupExisred;
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
         },
-        groups: async (parent, args, { req }, info) => {
+        groups: async (parent, { limit = 20, page = 1 }, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 return await Group.find({
                     members: { $in: [req.user._id] },
                 })
-                    .populate({
-                        path: "messages",
-                    })
-                    .populate({
-                        select: "-password",
-                        path: "members",
-                    })
-                    .populate({
-                        select: "-password",
-                        path: "userDeleted",
-                    });
+                    .sort({ updatedAt: -1 })
+                    .limit(20)
+                    .skip((page - 1) * limit);
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -68,20 +49,20 @@ module.exports = {
         createGroup: async (parent, { userId }, { req }) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 const groupExisted = await Group.findOne({
                     members: { $all: [req.user._id, userId] },
                 });
                 if (groupExisted) {
-                    return new ApolloError("Group already existed", 400);
+                    return new ApolloError('Group already existed', 400);
                 }
 
                 const newGroup = new Group({
                     members: [userId, req.user._id],
                 });
                 await newGroup.save();
-                return { message: "Create group success" };
+                return { message: 'Create group success' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -89,7 +70,7 @@ module.exports = {
         deleteGroup: async (parent, { id }, { req }) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 const groupExisted = await Group.findOne({
                     _id: id,
@@ -97,13 +78,13 @@ module.exports = {
                     userDeleted: { $nin: [req.user._id] },
                 });
                 if (!groupExisted) {
-                    return new AuthenticationError("Group not found", 404);
+                    return new AuthenticationError('Group not found', 404);
                 }
                 await Group.updateOne(
                     { _id: id },
                     { userDeleted: [...groupExisted.userDeleted, req.user._id] }
                 );
-                return { message: "Delete group success!" };
+                return { message: 'Delete group success!' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

@@ -6,6 +6,7 @@ const {
     NotificationOrder,
     NotificationBook,
     NotificationPost,
+    Post,
 } = require('../../models');
 const { ApolloError, AuthenticationError } = require('apollo-server-express');
 const accountSid = process.env.TWILIOID_ACCOUNT_SID;
@@ -289,6 +290,24 @@ module.exports = {
                 //     });
 
                 return await createToken(user._id, '5m');
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        profileUserOther: async (parent, { id }, { req }, info) => {
+            try {
+                const userExisted = await User.findOne({
+                    _id: id,
+                    verifed: true,
+                }).select('-password -role');
+                if (!userExisted) {
+                    return new ApolloError('User not found', 400);
+                }
+                const postOfUser = await Post.find({ author: id });
+                return {
+                    profile: userExisted,
+                    post: postOfUser,
+                };
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

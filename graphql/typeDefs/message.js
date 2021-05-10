@@ -1,14 +1,16 @@
-const { gql } = require("apollo-server-express");
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
     scalar DateTime
     type Query {
         message(id: ID!): Message!
-        messagesInGroup(groupId: ID!): [Message!]!
+        messagesInGroup(groupId: ID!, limit: Int, page: Int): [Message!]!
         messagesByAdmin: [Message!]!
+        seenMessage(id: ID!): Message
     }
     type Mutation {
         sendMessage(dataMessage: dataCreateMessage!): Message!
+        sendMessageImage(dataMessageImage: dataMessageImage!): Message!
     }
     type Subscription {
         receiveMessage(userId: ID!): Message!
@@ -21,7 +23,7 @@ module.exports = gql`
         to: Group
         from: User
         type: TYPE
-        seen: Boolean
+        seen: DateTime
         createdAt: DateTime
         updatedAt: DateTime
         deletedAt: DateTime
@@ -30,7 +32,13 @@ module.exports = gql`
         content: String!
         images: [String!]
         type: TYPE!
-        to: ID!
+        to: ID
+        user: ID
+    }
+    input dataMessageImage {
+        files: [Upload!]!
+        to: ID
+        user: ID
     }
     enum TYPE {
         VIDEO

@@ -1,10 +1,10 @@
-const { gql } = require("apollo-server-express");
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
     scalar DateTime
     type Query {
         group(id: ID!): Group!
-        groups: [Group!]!
+        groups(limit: Int, page: Int): [Group!]!
     }
     type Mutation {
         createGroup(userId: ID!): Result!
@@ -15,6 +15,7 @@ module.exports = gql`
         members: [User!]
         lastMassage: Message
         messages: [Message!]
+        images: [String]
         userDeleted: [User!]
         createdAt: DateTime!
         updatedAt: DateTime!

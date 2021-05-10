@@ -1,24 +1,29 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Group = mongoose.Schema(
     {
         members: [
             {
                 type: mongoose.Types.ObjectId,
-                required: [true, "please enter member"],
-                ref: "user",
+                required: [true, 'please enter member'],
+                ref: 'user',
+            },
+        ],
+        images: [
+            {
+                type: String,
             },
         ],
         messages: [
             {
                 type: mongoose.Types.ObjectId,
-                ref: "message",
+                ref: 'message',
             },
         ],
         lastMassage: {
             type: mongoose.Types.ObjectId,
             // required: [true, "please enter message"],
-            ref: "message",
+            ref: 'message',
         },
         deletedAt: {
             type: Date,
@@ -26,7 +31,7 @@ const Group = mongoose.Schema(
         userDeleted: [
             {
                 type: mongoose.Types.ObjectId,
-                ref: "user",
+                ref: 'user',
             },
         ],
     },
@@ -35,4 +40,4 @@ const Group = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("group", Group);
+module.exports = mongoose.model('group', Group);

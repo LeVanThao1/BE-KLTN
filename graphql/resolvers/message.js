@@ -1,9 +1,9 @@
-const { Group, Message, User } = require("../../models");
-const { ApolloError, AuthenticationError } = require("apollo-server-express");
-const { ROLE } = require("../../constants");
-const { checkSignedIn } = require("../../helper/auth");
-const { pubsub, TypeSub } = require("../configs");
-const { withFilter } = require("graphql-subscriptions");
+const { Group, Message, User } = require('../../models');
+const { ApolloError, AuthenticationError } = require('apollo-server-express');
+const { ROLE } = require('../../constants');
+const { checkSignedIn } = require('../../helper/auth');
+const { pubsub, TypeSub } = require('../configs');
+const { withFilter } = require('graphql-subscriptions');
 module.exports = {
     Message: {
         from: async (parent, { id }, { req }, info) => {
@@ -25,16 +25,16 @@ module.exports = {
         message: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 const messageExisted = await Message.findOne({
                     _id: id,
-                    "to.members": {
+                    'to.members': {
                         members: { $in: [req.user._id] },
                     },
                 });
                 if (!messageExisted) {
-                    return new ApolloError("Message not found", 404);
+                    return new ApolloError('Message not found', 404);
                 }
 
                 return messageExisted;
@@ -42,10 +42,15 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        messagesInGroup: async (parent, { groupId }, { req }, info) => {
+        messagesInGroup: async (
+            parent,
+            { groupId, limit = 20, page = 1 },
+            { req },
+            info
+        ) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
                 const groupExisted = await Group.findOne({
                     _id: groupId,
@@ -53,11 +58,32 @@ module.exports = {
                 });
 
                 if (!groupExisted) {
-                    return new ApolloError("Group not found", 404);
+                    return new ApolloError('Group not found', 404);
                 }
-                return Message.find({ to: groupId }).populate({
-                    path: "to",
+                return Message.find({ to: groupId })
+                    .sort({ createdAt: -1 })
+                    .limit(20)
+                    .skip((page - 1) * limit);
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+        seenMessage: async (parent, { id }, { req }, info) => {
+            try {
+                if (!(await checkSignedIn(req, true))) {
+                    return new AuthenticationError('User have not permission');
+                }
+                let message = await Message.findOne({
+                    _id: id,
+                    deletedAt: undefined,
                 });
+                if (!message) {
+                    return new ApolloError('Message is deleted', 500);
+                }
+
+                message.seen = new Date();
+                await message.save();
+                return message;
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -67,30 +93,102 @@ module.exports = {
         sendMessage: async (parent, { dataMessage }, { req }) => {
             try {
                 if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError("User have not permission");
+                    return new AuthenticationError('User have not permission');
                 }
-                const groupExisted = await Group.findOne({
-                    _id: dataMessage.to,
-                });
-                if (!groupExisted) {
-                    return new ApolloError("Have error", 400);
+                let group;
+                if (dataMessage.user) {
+                    group = new Group({
+                        members: [req.user._id, dataMessage.user],
+                    });
+                    await group.save();
+                    delete dataMessage.user;
+                    dataMessage.to = group._id;
+                } else {
+                    group = await Group.findOne({
+                        _id: dataMessage.to,
+                    });
+                    if (!group) {
+                        return new ApolloError('Have error', 400);
+                    }
                 }
-
                 const newMessage = new Message({
                     ...dataMessage,
                     from: req.user._id,
                     datetime: new Date(),
                 });
                 await Group.updateOne(
-                    { _id: dataMessage.to },
+                    { _id: group._id },
                     { lastMassage: newMessage._id }
                 );
                 await newMessage.save();
 
                 pubsub.publish(TypeSub.SEND_MESSAGE, {
                     newMessage,
-                    to: groupExisted.members.filter(
-                        (item) => item !== req.user._id
+                    to: group.members.filter(
+                        (item) => item + '' !== req.user._id + ''
+                    )[0],
+                });
+
+                return newMessage;
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+
+        sendMessageImage: async (parent, { dataMessageImage }, { req }) => {
+            try {
+                if (!(await checkSignedIn(req, true))) {
+                    return new AuthenticationError('User have not permission');
+                }
+                let group;
+                if (dataMessageImage.user) {
+                    group = new Group({
+                        members: [req.user._id, dataMessageImage.user],
+                    });
+                    await group.save();
+                } else {
+                    group = await Group.findOne({
+                        _id: dataMessageImage.to,
+                    });
+                    if (!group) {
+                        return new ApolloError('Have error', 400);
+                    }
+                }
+                if (args.files.length > 10) {
+                    return new ApolloError('Maxfiles only 10', 500);
+                }
+                const files = await Promise.all(dataMessageImage.files);
+                const file_urls = files.map(async (file) => {
+                    const result = await uploadFile(file, 'book');
+                    return result.secure_url;
+                });
+                const dataImage = file_urls.reduce((a, b) => {
+                    dataImage.push(b);
+                    return a + b + '|';
+                }, '');
+
+                const newMessage = new Message({
+                    to: group._id,
+                    content: `đã gửi ${dataImage.length} hình ảnh`,
+                    images: dataImage,
+                    type: 'IMAGE',
+                    from: req.user._id,
+                    datetime: new Date(),
+                });
+
+                await Group.updateOne(
+                    { _id: group._id },
+                    {
+                        lastMassage: newMessage._id,
+                        images: [...dataImage, ...group.images],
+                    }
+                );
+                await newMessage.save();
+
+                pubsub.publish(TypeSub.SEND_MESSAGE, {
+                    newMessage,
+                    to: group.members.filter(
+                        (item) => item + '' !== req.user._id + ''
                     )[0],
                 });
 
@@ -106,7 +204,7 @@ module.exports = {
             subscribe: withFilter(
                 () => pubsub.asyncIterator(TypeSub.SEND_MESSAGE),
                 (payload, variables) => {
-                    return payload.to + "" === variables.userId + "";
+                    return payload.to + '' === variables.userId + '';
                 }
             ),
         },

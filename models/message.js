@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Message = mongoose.Schema(
     {
         content: {
             type: String,
-            required: [true, "please enter title"],
+            required: [true, 'please enter title'],
         },
         images: [
             {
@@ -13,27 +13,27 @@ const Message = mongoose.Schema(
         ],
         datetime: {
             type: Date,
-            required: [true, "please enter date"],
+            required: [true, 'please enter date'],
         },
         to: {
             type: mongoose.Types.ObjectId,
-            required: [true, "please enter group"],
-            ref: "group",
+            required: [true, 'please enter group'],
+            ref: 'group',
         },
         from: {
             type: mongoose.Types.ObjectId,
-            required: [true, "please author"],
-            ref: "user",
+            required: [true, 'please author'],
+            ref: 'user',
         },
         seen: {
             type: Date,
-            default: false,
+            default: null,
         },
         type: {
             type: String,
-            enum: ["TEXT", "VIDEO", "IMAGE"],
-            default: "TEXT",
-            required: [true, "please type"],
+            enum: ['TEXT', 'VIDEO', 'IMAGE'],
+            default: 'TEXT',
+            required: [true, 'please type'],
         },
         deletedAt: {
             type: Date,
@@ -44,4 +44,4 @@ const Message = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("message", Message);
+module.exports = mongoose.model('message', Message);
