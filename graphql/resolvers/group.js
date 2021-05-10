@@ -44,6 +44,23 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
+        getImages: async (parent, { id }, { req }, info) => {
+            try {
+                if (!(await checkSignedIn(req, true))) {
+                    return new AuthenticationError('User have not permission');
+                }
+                const groupExisred = await Group.findOne({
+                    _id: id,
+                    members: { $in: [req.user._id] },
+                });
+                if (!groupExisred) {
+                    return new ApolloError('Group not found', 404);
+                }
+                return groupExisred.images;
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
     },
     Mutation: {
         createGroup: async (parent, { userId }, { req }) => {

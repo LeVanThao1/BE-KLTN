@@ -5,6 +5,7 @@ module.exports = gql`
     type Query {
         group(id: ID!): Group!
         groups(limit: Int, page: Int): [Group!]!
+        getImages(id: ID!): [String!]!
     }
     type Mutation {
         createGroup(userId: ID!): Result!

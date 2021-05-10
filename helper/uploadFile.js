@@ -20,7 +20,6 @@ const uploadFile = async (file, type = 'avatar') => {
     // }
     // Return the Cloudinary object when it's all good
     return new Promise((resolve, reject) => {
-        console.log(1);
         const cloudStream = cloudinary.v2.uploader.upload_stream(
             {
                 folder: 'Dino_Store/' + type,
@@ -29,10 +28,9 @@ const uploadFile = async (file, type = 'avatar') => {
                 crop: 'fill',
             },
             (err, fileUploaded) => {
-                console.log(1);
                 // In case something hit the fan
                 if (err) {
-                    console.log('errrr ..... ', e);
+                    console.log('errrr ..... ', err);
                     reject(err);
                 }
 

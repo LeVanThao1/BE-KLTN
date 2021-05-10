@@ -4,6 +4,7 @@ const { ROLE } = require('../../constants');
 const { checkSignedIn } = require('../../helper/auth');
 const { pubsub, TypeSub } = require('../configs');
 const { withFilter } = require('graphql-subscriptions');
+const uploadFile = require('../../helper/uploadFile');
 module.exports = {
     Message: {
         from: async (parent, { id }, { req }, info) => {
@@ -154,23 +155,48 @@ module.exports = {
                         return new ApolloError('Have error', 400);
                     }
                 }
-                if (args.files.length > 10) {
+                if (dataMessageImage.files.length > 10) {
                     return new ApolloError('Maxfiles only 10', 500);
                 }
-                const files = await Promise.all(dataMessageImage.files);
-                const file_urls = files.map(async (file) => {
-                    const result = await uploadFile(file, 'book');
-                    return result.secure_url;
+                // const files = await Promise.all(dataMessageImage.files);
+                let dataImage = [];
+                const promissFiles = new Promise(async (resolve, reject) => {
+                    try {
+                        for (
+                            let i = 0;
+                            i <= dataMessageImage.files.length;
+                            i++
+                        ) {
+                            if (i === dataMessageImage.files.length)
+                                return resolve(dataImage);
+                            const result = await uploadFile(
+                                dataMessageImage.files[i],
+                                'book'
+                            );
+                            dataImage.push(result.secure_url);
+                        }
+                    } catch (e) {
+                        console.log(e);
+                        reject(e);
+                    }
+                }).catch((err) => {
+                    return new ApolloError(err.message, 500);
                 });
-                const dataImage = file_urls.reduce((a, b) => {
-                    dataImage.push(b);
-                    return a + b + '|';
-                }, '');
-
+                // const file_urls = dataMessageImage.files.map(async (file) => {
+                //     const result = await uploadFile(file, 'book');
+                //     console.log(result);
+                //     return result.secure_url;
+                // });
+                // const dataImage = file_urls.reduce((a, b) => {
+                //     dataImage.push(b);
+                //     return a + b + '|';
+                // }, '');
+                // file_urls
+                const data = await promissFiles;
                 const newMessage = new Message({
                     to: group._id,
-                    content: `đã gửi ${dataImage.length} hình ảnh`,
-                    images: dataImage,
+                    content: `đã gửi ${data.length} hình ảnh`,
+                    images: data,
                     type: 'IMAGE',
                     from: req.user._id,
                     datetime: new Date(),
@@ -180,7 +206,7 @@ module.exports = {
                     { _id: group._id },
                     {
                         lastMassage: newMessage._id,
-                        images: [...dataImage, ...group.images],
+                        images: [...data, ...group.images],
                     }
                 );
                 await newMessage.save();
