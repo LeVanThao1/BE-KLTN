@@ -9,7 +9,7 @@
         "preinstall": "npx npm-force-resolutions && npm cache clean --force npm cache verify"
     },
     "engines": {
-        "node": "13.1.0",
+        "node": "12.13.0",
         "npm": "6.2.0",
         "yarn": "1.19.1"
     },
