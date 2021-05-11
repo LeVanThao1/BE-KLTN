@@ -8,6 +8,11 @@
         "start": "nodemon index.js",
         "preinstall": "npx npm-force-resolutions"
     },
+    "engines": {
+        "node": "13.1.0",
+        "npm": "6.12.1",
+        "yarn": "1.19.1"
+    },
     "resolutions": {
         "fs-capacitor": "^6.2.0",
         "graphql-upload": "^11.0.0"
