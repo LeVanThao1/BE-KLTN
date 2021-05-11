@@ -18,7 +18,7 @@ const path = require('path');
 const { pubsub } = require('./graphql/configs/index');
 const http = require('http');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
-app.use('*', cors({ origin: 'http://localhost:4000' }));
+app.use('*', cors({ origin: '*' }));
 
 // app.use("/graphql", bodyParser.json(), graphqlExpress({ schema }));
 // const {typeDefs, resolvers} = require("./graphql");
@@ -77,15 +77,12 @@ server.installSubscriptionHandlers(httpServer);
 const PORT = process.env.PORT || 3000;
 
 mongoose
-    .connect(
-        'mongodb+srv://thaolv210402:ta210402@cluster0.2o95l.mongodb.net/express-graphql?retryWrites=true&w=majority',
-        {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useFindAndModify: false,
-            useCreateIndex: true,
-        }
-    )
+    .connect(process.env.DB, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+        useCreateIndex: true,
+    })
     .then(() =>
         httpServer.listen(PORT, () => {
             consola.success(
