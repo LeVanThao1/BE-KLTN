@@ -16,14 +16,14 @@ const User = mongoose.Schema(
             type: String,
             trim: true,
             // required: [true, "please enter email"],
-            unique: true,
+            // unique: true,
             default: null,
         },
         phone: {
             type: String,
             length: 10,
             // required: [true, "please enter phone"],
-            unique: true,
+            // unique: true,
             default: null,
         },
         password: {
