@@ -69,6 +69,25 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
+        messagesByUserID: async (parent, { userId }, { req }, info) => {
+            try {
+                if (!(await checkSignedIn(req, true))) {
+                    return new AuthenticationError('User have not permission');
+                }
+                const groupExisted = await Group.findOne({
+                    members: { $all: [req.user._id, userId] },
+                });
+
+                if (!groupExisted) {
+                    return new ApolloError('Group not found', 404);
+                }
+                return Message.find({ to: groupExisted._id })
+                    .sort({ createdAt: -1 })
+                    .limit(20);
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
         seenMessage: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {

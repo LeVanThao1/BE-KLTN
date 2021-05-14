@@ -5,6 +5,7 @@ module.exports = gql`
     type Query {
         message(id: ID!): Message!
         messagesInGroup(groupId: ID!, limit: Int, page: Int): [Message!]!
+        messagesByUserID(userId: ID!): [Message!]!
         messagesByAdmin: [Message!]!
         seenMessage(id: ID!): Message
     }
