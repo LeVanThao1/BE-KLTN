@@ -487,5 +487,21 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
+        updateAvatar: async (parent, { file }, { req }) => {
+            try {
+                if (!(await checkSignedIn(req, true, true))) {
+                    return new AuthenticationError('User not authenticated');
+                }
+                const result = await uploadFile(file);
+                if (!result) {
+                    return new ApolloError('Have error', 500);
+                }
+                req.user.avatar = result.secure_url;
+                await req.user.save();
+                return result.secure_url;
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
     },
 };

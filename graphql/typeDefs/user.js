@@ -43,6 +43,7 @@ module.exports = gql`
         updateCart(dataCart: [DetailUpdate!]!): [Detail!]!
         addToLike(id: ID!): Result!
         removeToLike(id: ID!): Result!
+        updateAvatar(file: Upload!): String!
     }
     input UserInput {
         email: String
