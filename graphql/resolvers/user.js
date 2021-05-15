@@ -26,6 +26,7 @@ const { ROLE } = require('../../constants');
 const sendEmail = require('../../helper/mailer');
 const moment = require('moment');
 const user = require('../../models/user');
+const uploadFile = require('../../helper/uploadFile');
 module.exports = {
     Detail: {
         book: async (parent, args, { req }, info) => {
