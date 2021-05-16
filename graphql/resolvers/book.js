@@ -345,7 +345,7 @@ module.exports = {
 
                 for (let key in dataBook) {
                     if (Array.isArray(dataBook[key])) {
-                        if (data[key].length === 0) {
+                        if (dataBook[key].length === 0) {
                             delete dataBook[key];
                         }
                     } else {
