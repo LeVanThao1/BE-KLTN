@@ -136,9 +136,9 @@ module.exports = {
                 if (storeExisted) {
                     return new ApolloError('Name store already existed', 400);
                 }
-                if (address) {
+                if (dataStore.address) {
                     const [{ latitude, longitude }] = await geocoder.geocode(
-                        '32 Lê Văn Đức, Hoà Cường Nam, Hải Châu, Đà Nẵng'
+                        address
                     );
                     dataStore.location = [latitude, longitude];
                 }
@@ -170,7 +170,12 @@ module.exports = {
                 if (!storeExisted) {
                     return new AuthenticationError('Store not found', 404);
                 }
-
+                if (dataStore.address) {
+                    const [{ latitude, longitude }] = await geocoder.geocode(
+                        dataStore.address
+                    );
+                    dataStore.location = [latitude, longitude];
+                }
                 for (let key in dataStore) {
                     if (Array.isArray(dataStore[key])) {
                         if (data[key].length === 0) {

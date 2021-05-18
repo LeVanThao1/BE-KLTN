@@ -51,5 +51,7 @@ module.exports = gql`
         description: String
         background: String
         avatar: String
+        owner: ID
+        address: String
     }
 `;
