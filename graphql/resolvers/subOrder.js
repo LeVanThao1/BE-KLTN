@@ -62,7 +62,7 @@ module.exports = {
                 return await SubOrder.find({
                     user: req.user._id,
                     deletedAt: undefined,
-                });
+                }).sort({ createdAt: -1 });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -83,7 +83,7 @@ module.exports = {
                 return await SubOrder.find({
                     store: store._id,
                     deletedAt: undefined,
-                });
+                }).sort({ createdAt: -1 });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
