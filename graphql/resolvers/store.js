@@ -178,7 +178,7 @@ module.exports = {
                 }
                 for (let key in dataStore) {
                     if (Array.isArray(dataStore[key])) {
-                        if (data[key].length === 0) {
+                        if (dataStore[key].length === 0) {
                             delete dataStore[key];
                         }
                     } else {
