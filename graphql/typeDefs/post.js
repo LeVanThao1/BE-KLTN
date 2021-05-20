@@ -44,7 +44,7 @@ module.exports = gql`
         publisher: String
         category: ID
         price: Float!
-        bookWanna: [String!]!
+        bookWanna: [String!]
     }
     input dataUpdatePost {
         images: [String!]
