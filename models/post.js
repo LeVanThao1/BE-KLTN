@@ -8,15 +8,15 @@ const Post = mongoose.Schema(
         },
         unsignedTitle: {
             type: String,
-            default: null
+            default: null,
         },
         unsignedName: {
             type: String,
-            default: null
+            default: null,
         },
         unsignedDescription: {
             type: String,
-            default: null
+            default: null,
         },
         images: [
             {
@@ -64,10 +64,12 @@ const Post = mongoose.Schema(
             required: [true, 'please author'],
             ref: 'user',
         },
-        bookWanna: [{
-            type: String,
-            required: [true, 'please book want to exchange'],
-        }],
+        bookWanna: [
+            {
+                type: String,
+                // required: [true, 'please book want to exchange'],
+            },
+        ],
         deletedAt: {
             type: Date,
         },
