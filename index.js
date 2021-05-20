@@ -18,7 +18,7 @@ const path = require('path');
 const { pubsub } = require('./graphql/configs/index');
 const http = require('http');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
-app.use('*', cors({ origin: 'http://localhost:4000' }));
+app.use('*', cors({ origin: '*' }));
 
 // app.use("/graphql", bodyParser.json(), graphqlExpress({ schema }));
 // const {typeDefs, resolvers} = require("./graphql");
