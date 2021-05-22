@@ -149,22 +149,29 @@ module.exports = {
                 if (!user) {
                     return new ApolloError('User not found', '404');
                 }
-                if (otp !== user.otp) {
-                    return new ApolloError('OTP is invalid', '400');
+                if (otp !== user.otp && !type) {
+                    return new ApolloError('OTP is invalid', 401);
                 }
                 if (moment(user.expired) < new Date()) {
                     return new ApolloError('OTP is expired', '400');
                 }
-                // await client.verify
-                //     .services(serviceId)
-                //     .verificationChecks.create({
-                //         to: "+84" + user.phone.slice(1),
-                //         code: otp,
-                //     })
-                //     .then((verified) => console.log(verified))
-                //     .catch((e) => {
-                //         throw new ApolloError("OTP incorrect", 400);
-                //     });
+                if (type) {
+                    await client.verify
+                        .services(serviceId)
+                        .verificationChecks.create({
+                            to: '+84' + phone.slice(1),
+                            code: otp,
+                        })
+                        .then((verification_check) => {
+                            if (!verification_check.valid) {
+                                throw new ApolloError('OTP is invalid', 401);
+                            }
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            throw new ApolloError(err.message, 400);
+                        });
+                }
                 await User.updateOne(query, {
                     verifed: true,
                     expired: null,
@@ -226,25 +233,29 @@ module.exports = {
                 if (!user) {
                     return new ApolloError('User not found', '404');
                 }
-                // await client.verify.services(serviceId).verifications.create({
-                //     to: "+84" + phone.slice(1),
-                //     channel: "sms",
-                // });
                 const otp = (Date.now() + '').slice(7);
                 if (type) {
-                    await client.messages
-                        .create({
-                            body: `Please verify with OTP : ${otp}`,
-                            from: '+16614909715',
+                    await client.verify
+                        .services(serviceId)
+                        .verifications.create({
                             to: '+84' + phone.slice(1),
+                            channel: 'sms',
                         })
-                        .then((message) => console.log(message.sid))
+                        .then((verification) => {
+                            console.log(verification.sid);
+                        })
                         .catch((err) => {
-                            console.log(err);
-                            throw new Error(
-                                'Service is busy, please again',
-                                500
-                            );
+                            if (err.status === 429) {
+                                throw new ApolloError(
+                                    'Vượt quá giới hạn yêu cầu cho phép, vui lòng đợi sau 10 phut',
+                                    err.status
+                                );
+                            } else {
+                                throw new ApolloError(
+                                    'Xảy ra lỗi vui lòng đợi',
+                                    err.status
+                                );
+                            }
                         });
                 } else {
                     sendEmail(email, otp);
@@ -267,30 +278,30 @@ module.exports = {
                 if (!user) {
                     return new ApolloError('User not found', '404');
                 }
-                if (otp !== user.otp) {
+                if (otp !== user.otp && !type) {
                     return new ApolloError('OTP is invalid', '400');
                 }
                 if (moment(user.expired) < new Date()) {
                     return new ApolloError('OTP is expired', '400');
                 }
-                // await client.verify
-                //     .services(serviceId)
-                //     .verificationChecks.create({
-                //         to: "+84" + user.phone.slice(1),
-                //         code: otp,
-                //     })
-                //     .then((verified) => {
-                //         console.log(verified);
-                //         if (verified.status === "pending") {
-                //             throw new ApolloError("OTP incorrect", 400);
-                //         }
-                //     })
-                //     .catch((e) => {
-                //         console.log(e);
-                //         throw new ApolloError("OTP expired", 400);
-                //     });
-
-                return await createToken(user._id, '5m');
+                if (type) {
+                    await client.verify
+                        .services(serviceId)
+                        .verificationChecks.create({
+                            to: '+84' + phone.slice(1),
+                            code: otp,
+                        })
+                        .then((verification_check) => {
+                            if (!verification_check.valid) {
+                                throw new ApolloError('OTP is invalid', 401);
+                            }
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            throw new ApolloError(err.message, 400);
+                        });
+                }
+                return await createToken(user._id, '10m');
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
@@ -313,6 +324,51 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
+        resetOTP: async (parent, { phone, email, type }, { req }, info) => {
+            try {
+                let query = {};
+                if (type) query.phone = phone;
+                else query.email = email;
+                const user = await User.findOne(query);
+                if (!user) {
+                    return new ApolloError('User not found', 404);
+                }
+                const otp = (Date.now() + '').slice(7);
+                user.otp = otp;
+                user.expired = new Date(moment().add(10, 'minutes'));
+
+                if (type) {
+                    await client.verify
+                        .services(serviceId)
+                        .verifications.create({
+                            to: '+84' + phone.slice(1),
+                            channel: 'sms',
+                        })
+                        .then((verification) => {
+                            console.log(verification.sid);
+                        })
+                        .catch((err) => {
+                            if (err.status === 429) {
+                                throw new ApolloError(
+                                    'Vượt quá giới hạn yêu cầu cho phép, vui lòng đợi sau 10 phut',
+                                    err.status
+                                );
+                            } else {
+                                throw new ApolloError(
+                                    'Xảy ra lỗi vui lòng đợi',
+                                    err.status
+                                );
+                            }
+                        });
+                } else {
+                    sendEmail(email, otp);
+                }
+                await user.save();
+                return { message: 'Mã otp đã được gửi lại, vui lòng kiểm tra' };
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
     },
     Mutation: {
         register: async (parent, args, { req }) => {
@@ -326,7 +382,9 @@ module.exports = {
                 const userExisted = await User.findOne(query);
                 if (userExisted) {
                     return new ApolloError(
-                        'Phone or email is already registered',
+                        `${
+                            args.type ? 'Phone' : 'Email'
+                        } is already registered`,
                         500
                     );
                 }
@@ -339,24 +397,32 @@ module.exports = {
                     name: args.newUser.name,
                     password: hashPassword,
                     otp,
-                    expired: new Date(moment().add(5, 'minutes')),
+                    expired: new Date(moment().add(10, 'minutes')),
                     email: args.type ? null : args.newUser.email,
                     phone: args.type ? args.newUser.phone : null,
                 });
                 if (args.type) {
-                    await client.messages
-                        .create({
-                            body: `Please verify with OTP : ${otp}`,
-                            from: '+16614909715',
+                    await client.verify
+                        .services(serviceId)
+                        .verifications.create({
                             to: '+84' + newUser.phone.slice(1),
+                            channel: 'sms',
                         })
-                        .then((message) => console.log(message.sid))
+                        .then((verification) => {
+                            console.log(verification.sid);
+                        })
                         .catch((err) => {
-                            console.log(err);
-                            throw new Error(
-                                'Service is busy, please again',
-                                500
-                            );
+                            if (err.status === 429) {
+                                throw new ApolloError(
+                                    'Vượt quá giới hạn yêu cầu cho phép, vui lòng đợi sau 10 phut',
+                                    err.status
+                                );
+                            } else {
+                                throw new ApolloError(
+                                    'Xảy ra lỗi vui lòng đợi',
+                                    err.status
+                                );
+                            }
                         });
                 } else {
                     sendEmail(args.newUser.email, otp);

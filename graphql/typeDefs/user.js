@@ -29,6 +29,7 @@ module.exports = gql`
         ): String!
         userByAdmin(id: ID!): User!
         profileUserOther(id: ID!): ProfileOther!
+        resetOTP(phone: String, email: String, type: Boolean!): Result!
     }
     type ProfileOther {
         profile: User

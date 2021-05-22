@@ -1,7 +1,7 @@
-const nodemailer = require("nodemailer");
-const { google } = require("googleapis");
+const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 const { OAuth2 } = google.auth;
-const OAUTH_PLAYGROUND = "https://developers.google.com/oauthplayground";
+const OAUTH_PLAYGROUND = 'https://developers.google.com/oauthplayground';
 
 const {
     MAILING_SERVICE_CLIENT_ID,
@@ -25,9 +25,9 @@ const sendEmail = (to, otp) => {
 
     const accessToken = oauth2Client.getAccessToken();
     const smtpTransport = nodemailer.createTransport({
-        service: "gmail",
+        service: 'gmail',
         auth: {
-            type: "OAuth2",
+            type: 'OAuth2',
             user: SENDER_EMAIL_ADDRESS,
             clientId: MAILING_SERVICE_CLIENT_ID,
             clientSecret: MAILING_SERVICE_CLIENT_SECRET,
@@ -39,13 +39,12 @@ const sendEmail = (to, otp) => {
     const mailOptions = {
         from: SENDER_EMAIL_ADDRESS,
         to: to,
-        subject: "Dino",
+        subject: 'Dino',
         html: `
             <div style="max-width: 700px; margin:auto; border: 10px solid #ddd; padding: 50px 20px; font-size: 110%;">
             <h2 style="text-align: center; text-transform: uppercase;color: teal;">Welcome to the Dino.</h2>
             <p>Congratulations! You're almost set to start using Dino.
-                Just copy code OTP.
-                OTP: ${otp}
+                Just copy code OTP: ${otp}
             </p>
             </div>
         `,

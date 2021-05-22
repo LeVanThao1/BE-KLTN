@@ -22,7 +22,7 @@ const UniqueBook = mongoose.Schema(
         },
         author: {
             type: String,
-            required: [true, 'please enter year'],
+            required: [true, 'please enter author'],
         },
         numberOfReprint: {
             type: Number,
