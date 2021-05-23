@@ -215,27 +215,6 @@ module.exports = {
             { req }
         ) => {
             try {
-                // if (!(await checkPermission(req, [ROLE.STORE]))) {
-                //     return new AuthenticationError("User have not permission");
-                // }
-                // const store = await Store.findOne({ owner: req.user._id });
-                // if (!store) {
-                //     return new ApolloError("You have not store", 400);
-                // }
-                // const bookExisted = await Book.findOne({
-                //     $and: [{ book: dataBook.book }, { store: store._id }],
-                //     deletedAt: undefined,
-                // });
-
-                // if (bookExisted) {
-                //     return new ApolloError("Book already existed in shop", 400);
-                // }
-
-                // const newBook = new Book({
-                //     ...dataBook,
-                //     store: store._id,
-                // });
-                // await newBook.save();
                 return { message: 'Create book success' };
             } catch (e) {
                 return new ApolloError(e.message, 500);
@@ -285,39 +264,6 @@ module.exports = {
                 });
                 await newBook.save();
 
-                if (!dataBook.book) {
-                    let dataNotify = {
-                        data: {
-                            ...dataNewBook,
-                            unsignedName: toUnsigned(dataNewBook.name),
-                        },
-                        seen: false,
-                    };
-                    const uniqueBook = await UniqueBook.findOne({
-                        name: dataNewBook.name,
-                    }).populate({
-                        path: 'category',
-                    });
-                    if (!uniqueBook) {
-                        dataNotify.title = 'New book';
-                        dataNotify.status = 'ADD';
-                        dataNotify.description =
-                            'Currently this book is not available in the database. do you want to add a new one';
-                    } else {
-                        dataNotify.title = 'New book';
-                        dataNotify.status = 'UPDATE';
-                        dataNotify.description =
-                            'Currently this book is available in the database. do you want to update it';
-                        dataNotify.uniqueBook = uniqueBook._id;
-                    }
-                    const newNotificationAdmin = new NotificationBookAdmin(
-                        dataNotify
-                    );
-                    await newNotificationAdmin.save();
-                    pubsub.publish(TypeSub.CREATEBOOK, {
-                        content: newNotificationAdmin,
-                    });
-                }
                 return newBook;
             } catch (e) {
                 return new ApolloError(e.message, 500);
