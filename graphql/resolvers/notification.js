@@ -205,7 +205,7 @@ module.exports = {
                     return new AuthenticationError('User have not permission');
                 }
                 const notifiExisted = await NotificationBook.findOne({
-                    // to: req.user._id,
+                    to: req.user._id,
                     _id: id,
                 });
                 if (!notifiExisted) {
@@ -241,8 +241,8 @@ module.exports = {
                 if (!(await checkSignedIn(req, true))) {
                     return new AuthenticationError('User have not permission');
                 }
-                const notifiExisted = await NotificationOrder.findOne({
-                    // to: req.user._id,
+                const notifiExisted = await NotificationPost.findOne({
+                    to: req.user._id,
                     _id: id,
                 });
                 if (!notifiExisted) {
@@ -260,8 +260,8 @@ module.exports = {
                 if (!(await checkSignedIn(req, true))) {
                     return new AuthenticationError('User have not permission');
                 }
-                const notifiExisted = await NotificationPost.findOne({
-                    // to: req.user._id,
+                const notifiExisted = await NotificationOrder.findOne({
+                    to: req.user._id,
                     _id: id,
                 });
                 if (!notifiExisted) {
