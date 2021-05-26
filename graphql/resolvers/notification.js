@@ -17,6 +17,15 @@ const { checkSignedIn, checkPermission } = require('../../helper/auth');
 const { withFilter } = require('graphql-subscriptions');
 const { pubsub, TypeSub } = require('../configs');
 module.exports = {
+    DataBookAdmin: {
+        category: async (parent, { id }, { req }, info) => {
+            try {
+                return await Category.findOne({ _id: parent.category });
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
+    },
     NotificationOrder: {
         to: async (parent, { id }, { req }, info) => {
             try {
@@ -134,12 +143,12 @@ module.exports = {
                 return new ApolloError(e.message, 500);
             }
         },
-        notificationBookOfAdmin: async (parent, args, { req }, info) => {
+        notificationBookOfAdmin: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkPermission(req, ROLE.ADMIN))) {
                     return new AuthenticationError('User not authenticated');
                 }
-                return await NotificationBookAdmin.find();
+                return await NotificationBookAdmin.findOne({ _id: id });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }

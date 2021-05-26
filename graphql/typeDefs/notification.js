@@ -28,7 +28,7 @@ module.exports = gql`
         year: String!
         numberOfReprint: Int!
         publisher: String!
-        category: ID!
+        category: Category!
         author: String
         description: String!
     }
@@ -43,7 +43,7 @@ module.exports = gql`
         data: DataBookAdmin
         seen: Boolean
         status: STATUSBOOKADMIN
-        uniqueBook: ID
+        uniqueBook: UniqueBook
         createdAt: DateTime
         updatedAt: DateTime
         deletedAt: DateTime
