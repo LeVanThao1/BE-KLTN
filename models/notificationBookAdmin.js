@@ -1,14 +1,14 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const NotificationBookAdmin = mongoose.Schema(
     {
         title: {
             type: String,
-            required: [true, "please enter title"],
+            required: [true, 'please enter title'],
         },
         description: {
             type: String,
-            required: [true, "please enter description"],
+            required: [true, 'please enter description'],
         },
         data: {
             name: {
@@ -16,7 +16,7 @@ const NotificationBookAdmin = mongoose.Schema(
             },
             unsignedName: {
                 type: String,
-                default: null
+                default: null,
             },
             images: [
                 {
@@ -35,9 +35,12 @@ const NotificationBookAdmin = mongoose.Schema(
             },
             category: {
                 type: mongoose.Types.ObjectId,
-                ref: "category",
+                ref: 'category',
             },
             description: {
+                type: String,
+            },
+            author: {
                 type: String,
             },
         },
@@ -47,12 +50,12 @@ const NotificationBookAdmin = mongoose.Schema(
         },
         uniqueBook: {
             type: mongoose.Types.ObjectId,
-            ref: "uniqueBook",
+            ref: 'uniqueBook',
         },
         status: {
             type: String,
-            enum: ["ADD", "UPDATE"],
-            required: [true, "please enter status"],
+            enum: ['ADD', 'UPDATE'],
+            required: [true, 'please enter status'],
         },
         deletedAt: {
             type: Date,
@@ -63,4 +66,4 @@ const NotificationBookAdmin = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("notificationBookAdmin", NotificationBookAdmin);
+module.exports = mongoose.model('notificationBookAdmin', NotificationBookAdmin);

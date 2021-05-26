@@ -98,7 +98,9 @@ module.exports = {
                 if (!(await checkPermission(req, ROLE.ADMIN))) {
                     return new AuthenticationError('User not authenticated');
                 }
-                return await NotificationBookAdmin.find();
+                return await NotificationBookAdmin.find().sort({
+                    createdAt: -1,
+                });
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
