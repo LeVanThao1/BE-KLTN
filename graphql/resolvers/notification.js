@@ -84,6 +84,16 @@ module.exports = {
         },
     },
     Query: {
+        notificationsBookOfAdmin: async (parent, { id }, { req }, info) => {
+            try {
+                if (!(await checkPermission(req, ROLE.ADMIN))) {
+                    return new AuthenticationError('User not authenticated');
+                }
+                return await NotificationBookAdmin.find();
+            } catch (e) {
+                return new ApolloError(e.message, 500);
+            }
+        },
         notifications: async (parent, { id }, { req }, info) => {
             try {
                 if (!(await checkSignedIn(req, true))) {

@@ -7,6 +7,7 @@ module.exports = gql`
         notificationsOrder: [NotificationOrder!]!
         notificationsBook: [NotificationBook!]!
         notificationsPost: [NotificationPost!]!
+        notificationsBookOfAdmin: [NotificationBookAdmin!]
         notificationOfOrder(id: ID!): NotificationOrder!
         notificationOfBook(id: ID!): NotificationBook!
         notificationOfPost(id: ID!): NotificationPost!
