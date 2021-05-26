@@ -84,6 +84,7 @@ const Book = mongoose.Schema(
 
 const BookModel = mongoose.model('book', Book);
 BookModel.watch().on('change', async ({ fullDocument, operationType }) => {
+    console.log(fullDocument, operationType);
     if (operationType == 'insert' && !fullDocument.book) {
         let dataNotify = {
             data: {
@@ -137,16 +138,16 @@ BookModel.watch().on('change', async ({ fullDocument, operationType }) => {
             dataNotify.title = 'New book';
             dataNotify.status = 'ADD';
             dataNotify.description =
-                'Currently this book is not available in the database. do you want to add a new one';
+                'Currently this book is not available in the database. Do you want to add a new one?';
         } else {
             dataNotify.title = 'New book';
             dataNotify.status = 'UPDATE';
             dataNotify.description =
-                'Currently this book is available in the database. do you want to update it';
+                'Currently this book is available in the database. Do you want to update it?';
             dataNotify.uniqueBook = dataMap.id;
         }
         const newNotificationAdmin = new NotificationBookAdmin(dataNotify);
-        await newNotificationAdmin.save();
+        // await newNotificationAdmin.save();
         pubsub.publish(TypeSub.CREATEBOOK, {
             content: newNotificationAdmin,
         });
