@@ -62,6 +62,8 @@ module.exports = gql`
         interests: [ID]
         dateOfBirth: DateTime
         gender: GENDER
+        email: String
+        phone: String
     }
     enum ROLE {
         ADMIN
