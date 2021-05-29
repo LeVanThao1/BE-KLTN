@@ -147,7 +147,7 @@ BookModel.watch().on('change', async ({ fullDocument, operationType }) => {
             dataNotify.uniqueBook = dataMap.id;
         }
         const newNotificationAdmin = new NotificationBookAdmin(dataNotify);
-        // await newNotificationAdmin.save();
+        await newNotificationAdmin.save();
         pubsub.publish(TypeSub.CREATEBOOK, {
             content: newNotificationAdmin,
         });
