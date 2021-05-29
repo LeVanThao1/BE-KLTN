@@ -138,7 +138,7 @@ module.exports = {
                 }
                 if (dataStore.address) {
                     const [{ latitude, longitude }] = await geocoder.geocode(
-                        address
+                        dataStore.address
                     );
                     dataStore.location = [latitude, longitude];
                 }
