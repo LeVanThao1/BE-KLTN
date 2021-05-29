@@ -54,7 +54,7 @@ module.exports = {
     Mutation: {
         createOrder: async (parent, { dataOrder }, { req }, info) => {
             try {
-                if (!(await checkPermission(req))) {
+                if (!(await checkPermission(req, [ROLE.MEMBER]))) {
                     return new AuthenticationError('You have not permission');
                 }
                 const getProducts = await checkOrder(dataOrder.subOrder);
