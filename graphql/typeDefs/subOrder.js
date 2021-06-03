@@ -28,6 +28,7 @@ module.exports = gql`
         detail: Detail
         address: String
         phone: String
+        name: String
         status: STATUS
         note: String
         store: Store
