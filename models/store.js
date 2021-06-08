@@ -18,7 +18,8 @@ const Store = mongoose.Schema(
         avatar: {
             type: String,
             required: [true, 'please enter avatar'],
-            default: "https://res.cloudinary.com/thaovan/image/upload/v1622269815/Dino_Store/avatar/stroe_efp1ck.jpg"
+            default:
+                'https://res.cloudinary.com/thaovan/image/upload/v1622269815/Dino_Store/avatar/stroe_efp1ck.jpg',
         },
         background: {
             type: String,
@@ -38,7 +39,7 @@ const Store = mongoose.Schema(
         },
         verified: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         deletedAt: {
             type: Date,
