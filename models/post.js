@@ -52,7 +52,7 @@ const Post = mongoose.Schema(
             type: mongoose.Types.ObjectId,
             ref: 'category',
             default: null,
-            required: [true, 'please enter year'],
+            required: [true, 'please enter category'],
         },
         price: {
             type: Number,
