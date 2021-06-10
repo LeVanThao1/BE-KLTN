@@ -126,9 +126,9 @@ module.exports = {
     Mutation: {
         createStore: async (parent, { dataStore }, { req }) => {
             try {
-                if (!(await checkSignedIn(req, true))) {
-                    return new AuthenticationError('You have not permission');
-                }
+                // if (!(await checkSignedIn(req, true))) {
+                //     return new AuthenticationError('You have not permission');
+                // }
                 const storeExisted = await Store.findOne({
                     name: dataStore.name,
                     deletedAt: undefined,
@@ -137,17 +137,26 @@ module.exports = {
                     return new ApolloError('Name store already existed', 400);
                 }
                 if (dataStore.address) {
-                    const [{ latitude, longitude }] = await geocoder.geocode(
-                        dataStore.address
-                    );
-                    dataStore.location = [latitude, longitude];
+                    // const [{ latitude, longitude }] = await geocoder.geocode(
+                    //     dataStore.address
+                    // );
+                    // dataStore.location = [latitude, longitude];
+                    geocoder
+                        .geocode(dataStore.address)
+                        .then((data) => {
+                            const [{ latitude, longitude }] = data;
+                            dataStore.location = [latitude, longitude];
+                        })
+                        .catch((err) => {
+                            dataStore.location = [10.767815, 106.645915];
+                        });
                 }
                 const newStore = new Store({
                     ...dataStore,
                     unsignedName: toUnsigned(dataStore.name),
                 });
                 await User.updateOne(
-                    { _id: req.user._id },
+                    { _id: dataStore.owner },
                     { role: ROLE.STORE }
                 );
                 await newStore.save();
@@ -170,11 +179,23 @@ module.exports = {
                 if (!storeExisted) {
                     return new AuthenticationError('Store not found', 404);
                 }
-                if (dataStore.address) {
-                    const [{ latitude, longitude }] = await geocoder.geocode(
-                        dataStore.address
-                    );
-                    dataStore.location = [latitude, longitude];
+                if (
+                    dataStore.address &&
+                    storeExisted.address !== dataStore.address
+                ) {
+                    // const [{ latitude, longitude }] = await geocoder.geocode(
+                    //     dataStore.address
+                    // );
+                    // dataStore.location = [latitude, longitude];
+                    geocoder
+                        .geocode(dataStore.address)
+                        .then((data) => {
+                            const [{ latitude, longitude }] = data;
+                            dataStore.location = [latitude, longitude];
+                        })
+                        .catch((err) => {
+                            dataStore.location = [10.767815, 106.645915];
+                        });
                 }
                 for (let key in dataStore) {
                     if (Array.isArray(dataStore[key])) {
