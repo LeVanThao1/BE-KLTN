@@ -301,7 +301,7 @@ module.exports = {
                             throw new ApolloError(err.message, 400);
                         });
                 }
-                return await createToken(user._id, '10m');
+                return await createToken(user._id, '5m');
             } catch (e) {
                 return new ApolloError(e.message, 500);
             }
